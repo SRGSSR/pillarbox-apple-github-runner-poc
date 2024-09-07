@@ -1,8 +1,16 @@
 name: check-quality
-on: [push]
+on:
+  workflow_run:
+    workflows: ["install-tools"]
+    types:
+      - completed
 jobs:
-  quality-check:
-    runs-on: self-hosted
+  check-quality:
+    runs-on:
+      labels: [tart, macos]
     steps:
-      - uses: actions/checkout@v4
-      - run: make check-quality
+      - name: Run the quality check
+        run: |
+          ~/clone-repo-in-vm.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git sonoma-fake-pillarbox
+          cd ~/_repo
+          make check-quality

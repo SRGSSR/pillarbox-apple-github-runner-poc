@@ -1,0 +1,22 @@
+name: install-tools
+on: [push]
+jobs:
+  install-tools:
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Print secret
+        env:
+          MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
+        run: echo "The value of MACOS_CI_SETUP_TOKEN is $MACOS_CI_SETUP_TOKEN$"
+
+      - name: Clone macos-ci-setup repository
+        env:
+          MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
+        run: |
+          rm -rf ~/macos-ci-setup
+          git clone -b download-vm-images https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
+
+      - name: Install tools
+        run: |
+          ~/macos-ci-setup/create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest naga
