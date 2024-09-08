@@ -30,7 +30,7 @@ jobs:
           cd ~/macos-ci-setup
           ./create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
           ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" sonoma-fake-pillarbox
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "brew install mint shellcheck markdownlint-cli yamllint"
+          ./run-vm-shell-command.sh sonoma-fake-pillarbox "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv install --skip-existing 3.3.2"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "echo \"export PATH=\"$HOME/.rbenv/bin:$PATH\"\" > ~/.zshrc"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv global 3.3.2"
@@ -78,8 +78,8 @@ jobs:
   clean:
     runs-on:
       labels: [tart, macos]
-    needs: install-tools
-    if: ${{ failure() }}
+    needs: [install-tools, check-quality, run-streams, test-ios, test-tvos]
+    if: always()
     steps:
       - name: Stop and remove the VM
         run: |
