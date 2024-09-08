@@ -11,6 +11,4 @@ jobs:
     steps:
       - name: Run the quality check
         run: |
-          ~/clone-repo-in-vm.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git sonoma-fake-pillarbox
-          cd ~/_repo
-          make check-quality
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "make check-quality"
