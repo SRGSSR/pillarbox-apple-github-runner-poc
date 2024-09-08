@@ -1,0 +1,16 @@
+name: Clean
+on:
+  workflow_run:
+    workflows: ["install-tools", "check-quality"]
+    types:
+      - completed
+
+jobs:
+  final-job:
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Stop and remove the VM
+        run: |
+          tart stop sonoma-fake-pillarbox
+          tart delete sonoma-fake-pillarbox

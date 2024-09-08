@@ -15,8 +15,19 @@ jobs:
           MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
         run: |
           rm -rf ~/macos-ci-setup
-          git clone -b download-vm-images https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
+          git clone -b add-scripts https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
 
       - name: Install tools
         run: |
-          ~/macos-ci-setup/create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest naga
+          ~/macos-ci-setup/create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
+          ~/macos-ci-setup/clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git sonoma-fake-pillarbox""
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "brew install mint shellcheck markdownlint-cli yamllint"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv install --skip-existing 3.3.2"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "echo \"export PATH=\"$HOME/.rbenv/bin:$PATH\"\" > ~/.zshrc"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv global 3.3.2"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "gem install bundler -v 2.4.6"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "source ~/.zshrc"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd _repo && rm -rf Configuration"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "make setup"
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "make check-quality"
