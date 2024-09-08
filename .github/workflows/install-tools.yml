@@ -47,5 +47,6 @@ jobs:
     steps:
       - name: Stop and remove the VM
         run: |
-          tart stop sonoma-fake-pillarbox &> /dev/null
+          set +e
+          tart stop sonoma-fake-pillarbox
           tart delete sonoma-fake-pillarbox
