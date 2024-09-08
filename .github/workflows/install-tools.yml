@@ -37,7 +37,5 @@ jobs:
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "gem install bundler -v 2.4.6"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "source ~/.zshrc"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && rm -rf Configuration"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "pwd"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "pwd"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "make setup"
+          ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make setup"
