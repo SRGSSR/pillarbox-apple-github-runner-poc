@@ -39,3 +39,13 @@ jobs:
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && rm -rf Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make setup"
+  clean:
+    runs-on:
+      labels: [tart, macos]
+    needs: install-tools
+    if: ${{ failure() }}
+    steps:
+      - name: Stop and remove the VM
+        run: |
+          tart stop sonoma-fake-pillarbox
+          tart delete sonoma-fake-pillarbox
