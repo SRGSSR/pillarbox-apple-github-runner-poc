@@ -24,6 +24,8 @@ jobs:
           git clone -b add-scripts https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
 
       - name: Install tools
+        env:
+          MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
         run: |
           cd ~/macos-ci-setup
           ./create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
