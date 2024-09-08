@@ -1,5 +1,5 @@
 ---
-name: check-quality
+name: Check quality
 on:
   workflow_run:
     workflows: ["install-tools"]

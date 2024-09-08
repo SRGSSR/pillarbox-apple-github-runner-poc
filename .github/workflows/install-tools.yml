@@ -1,5 +1,5 @@
 ---
-name: install-tools
+name: Install tools
 on: [push]
 jobs:
   install-tools:
