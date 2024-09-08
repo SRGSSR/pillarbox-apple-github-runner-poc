@@ -2,11 +2,12 @@
 name: Check quality
 on:
   workflow_run:
-    workflows: ["install-tools"]
+    workflows: ["Install tools"]
     types:
       - completed
 jobs:
   check-quality:
+    needs: install-tools
     runs-on:
       labels: [tart, macos]
     steps:
