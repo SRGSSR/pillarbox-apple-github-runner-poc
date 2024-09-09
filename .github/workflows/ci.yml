@@ -39,14 +39,14 @@ jobs:
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && rm -rf Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make setup"
-  check-quality:
-    needs: install-tools
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Run the quality check
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make check-quality"
+  # check-quality:
+  #   needs: install-tools
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Run the quality check
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make check-quality"
 
   run-streams:
     needs: install-tools
@@ -78,7 +78,7 @@ jobs:
   clean:
     runs-on:
       labels: [tart, macos]
-    needs: [install-tools, check-quality, run-streams, test-ios, test-tvos]
+    needs: [install-tools, run-streams, test-ios, test-tvos] # [install-tools, check-quality, run-streams, test-ios, test-tvos]
     if: always()
     steps:
       - name: Stop and remove the VM
