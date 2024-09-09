@@ -6,16 +6,6 @@ jobs:
     runs-on:
       labels: [tart, macos]
     steps:
-      - name: Print secret
-        env:
-          MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
-        run: |
-          if [ -z $MACOS_CI_SETUP_TOKEN ]; then
-            echo "MACOS_CI_SETUP_TOKEN is not set !"
-          else
-            echo "MACOS_CI_SETUP_TOKEN is set..."
-          fi
-
       - name: Clone macos-ci-setup repository
         env:
           MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
@@ -36,11 +26,22 @@ jobs:
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv global 3.3.2"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "gem install bundler -v 2.4.6"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "source ~/.zshrc"
+  setup-project:
+    needs: install-tools
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Setup project
+        env:
+          MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
+        run: |
+          cd ~/macos-ci-setup
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && rm -rf Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make setup"
+
   # check-quality:
-  #   needs: install-tools
+  #   needs: setup-project
   #   runs-on:
   #     labels: [tart, macos]
   #   steps:
@@ -58,7 +59,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-streams-start"
 
   test-ios:
-    needs: run-streams
+    needs: [run-streams, setup-project]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -67,7 +68,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: run-streams
+    needs: [run-streams, setup-project]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -78,7 +79,7 @@ jobs:
   clean:
     runs-on:
       labels: [tart, macos]
-    needs: [install-tools, run-streams, test-ios, test-tvos] # [install-tools, check-quality, run-streams, test-ios, test-tvos]
+    needs: [install-tools, setup-project, run-streams, test-ios, test-tvos] # [install-tools, setup-project, check-quality, run-streams, test-ios, test-tvos]
     if: always()
     steps:
       - name: Stop and remove the VM
