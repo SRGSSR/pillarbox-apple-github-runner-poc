@@ -78,10 +78,28 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-tvos"
 
+  archive-demo-ios:
+    needs: [test-ios, test-tvos]
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Archive the iOS demo
+        run: |
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make archive-demo-ios"
+
+  archive-demo-tvos:
+    needs: [test-ios, test-tvos]
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Archive the tvOS demo
+        run: |
+          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make archive-demo-tvos"
+
   clean:
     runs-on:
       labels: [tart, macos]
-    needs: [install-tools, setup-project, run-streams, test-ios, test-tvos] # [install-tools, setup-project, check-quality, run-streams, test-ios, test-tvos]
+    needs: [archive-demo-ios, archive-demo-tvos]
     if: always()
     steps:
       - name: Stop and remove the VM
