@@ -25,7 +25,7 @@ jobs:
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "echo \"export PATH=\"$HOME/.rbenv/bin:$PATH\"\" > ~/.zshrc"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv global 3.3.2"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "gem install bundler -v 2.4.6"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "curl https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
+          ./run-vm-shell-command.sh sonoma-fake-pillarbox "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "chmod a+x /opt/homebrew/bin/shaka-packager"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "source ~/.zshrc"
   setup-project:
