@@ -141,7 +141,7 @@ end
 
 def upload_app_to_testflight
   login_to_app_store_connect
-  upload_to_testflight
+  # upload_to_testflight
 end
 
 # Requires `Beta App Information` and `Beta App Review Information` to have been properly filled once in TestFlight
