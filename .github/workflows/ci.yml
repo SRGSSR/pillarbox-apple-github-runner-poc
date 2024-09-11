@@ -18,7 +18,7 @@ jobs:
           MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
         run: |
           cd ~/macos-ci-setup
-          ./create-vm-for-project-non-interactive.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
+          ./create-vm-for-project.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
           ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" sonoma-fake-pillarbox
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv install --skip-existing 3.3.2"
