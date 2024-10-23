@@ -1,6 +1,8 @@
 ---
 name: CI
 on: [push]
+env:
+  VM_NAME: sequoia-for-pillarbox
 jobs:
   install-tools:
     runs-on:
@@ -18,16 +20,17 @@ jobs:
           MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
         run: |
           cd ~/macos-ci-setup
-          ./create-vm-for-project.sh sonoma-fake-pillarbox ghcr.io/cirruslabs/macos-sonoma-xcode:latest
-          ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" sonoma-fake-pillarbox
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv install --skip-existing 3.3.2"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "echo \"export PATH=\"$HOME/.rbenv/bin:$PATH\"\" > ~/.zshrc"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "rbenv global 3.3.2"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "gem install bundler -v 2.4.6"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "chmod a+x /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "source ~/.zshrc"
+          ./create-vm-for-project.sh $VM_NAME ghcr.io/cirruslabs/macos-sonoma-xcode:latest
+          ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" $VM_NAME
+          ./brew-fetch-and-sync.sh $VM_NAME mint shellcheck markdownlint-cli yamllint ffmpeg
+          ./run-vm-shell-command.sh $VM_NAME "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
+          ./run-vm-shell-command.sh $VM_NAME "rbenv install --skip-existing 3.3.2"
+          ./run-vm-shell-command.sh $VM_NAME "echo \"export PATH=\"$HOME/.rbenv/bin:$PATH\"\" > ~/.zshrc"
+          ./run-vm-shell-command.sh $VM_NAME "rbenv global 3.3.2"
+          ./run-vm-shell-command.sh $VM_NAME "gem install bundler -v 2.4.6"
+          ./run-vm-shell-command.sh $VM_NAME "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
+          ./run-vm-shell-command.sh $VM_NAME "chmod a+x /opt/homebrew/bin/shaka-packager"
+          ./run-vm-shell-command.sh $VM_NAME "source ~/.zshrc"
   setup-project:
     needs: install-tools
     runs-on:
@@ -38,9 +41,9 @@ jobs:
           MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
         run: |
           cd ~/macos-ci-setup
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && rm -rf Configuration"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
-          ./run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make setup"
+          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && rm -rf Configuration"
+          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git dad52a4242c7997c179073caec03b8d6e718fc03 Configuration"
+          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
 
   # check-quality:
   #   needs: setup-project
@@ -49,7 +52,7 @@ jobs:
   #   steps:
   #     - name: Run the quality check
   #       run: |
-  #         ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make check-quality"
+  #         ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make check-quality"
 
   run-streams:
     needs: install-tools
@@ -58,7 +61,7 @@ jobs:
     steps:
       - name: Run test streams
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-streams-start"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-streams-start"
 
   test-ios:
     needs: [run-streams, setup-project]
@@ -67,7 +70,7 @@ jobs:
     steps:
       - name: Run the iOS tests
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-ios"
 
   test-tvos:
     needs: [run-streams, setup-project]
@@ -76,7 +79,7 @@ jobs:
     steps:
       - name: Run the tvOS tests
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make test-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
     needs: [test-ios, test-tvos]
@@ -85,7 +88,7 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make archive-demo-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make archive-demo-ios"
 
   archive-demo-tvos:
     needs: [test-ios, test-tvos]
@@ -94,7 +97,7 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh sonoma-fake-pillarbox "cd ~/_repo && make archive-demo-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make archive-demo-tvos"
 
   clean:
     runs-on:
@@ -105,5 +108,5 @@ jobs:
       - name: Stop and remove the VM
         run: |
           set +e
-          tart stop sonoma-fake-pillarbox
-          tart delete sonoma-fake-pillarbox
+          tart stop $VM_NAME
+          tart delete $VM_NAME
