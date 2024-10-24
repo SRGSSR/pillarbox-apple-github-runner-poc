@@ -4,7 +4,7 @@ on: [push]
 env:
   MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
   VM_NAME: sequoia-for-pillarbox
-  VM_IMAGE: ghcr.io/cirruslabs/macos-sequoia-base:latest
+  VM_IMAGE: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
 jobs:
   install-tools:
     runs-on:

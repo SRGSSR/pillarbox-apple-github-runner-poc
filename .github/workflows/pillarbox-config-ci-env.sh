@@ -3,7 +3,7 @@
 # -- FOR DEBUG
 # MACOS_CI_SETUP_TOKEN="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"
 # VM_NAME="sequoia-for-pillarbox"
-# VM_IMAGE="ghcr.io/cirruslabs/macos-sequoia-base:latest"
+# VM_IMAGE="ghcr.io/cirruslabs/macos-sequoia-xcode:latest"
 
 cd ~/macos-ci-setup
 ./create-vm-for-project.sh $VM_NAME $VM_IMAGE
