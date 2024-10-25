@@ -3,11 +3,17 @@
 # This script attempts to checkout a configuration repository URL and to switch to a specific commit.
 
 CONFIGURATION_REPOSITORY_URL=$1
-CONFIGURATION_COMMIT_SHA1=$2
-CONFIGURATION_FOLDER=$3
+CONFIGURATION_BRANCH=$2
+CONFIGURATION_COMMIT_SHA1=$3
+CONFIGURATION_FOLDER=$4
 
 if [[ -z "$CONFIGURATION_REPOSITORY_URL" ]]; then
     echo "A configuration repository URL must be provided."
+    exit 1
+fi
+
+if [[ -z "$CONFIGURATION_BRANCH" ]]; then
+    echo "A configuration branch must be provided."
     exit 1
 fi
 
@@ -22,7 +28,7 @@ if [[ -z "$CONFIGURATION_FOLDER" ]]; then
 fi
 
 if [[ ! -d "$CONFIGURATION_FOLDER" ]]; then
-    if git clone "$CONFIGURATION_REPOSITORY_URL" "$CONFIGURATION_FOLDER" &> /dev/null; then
+    if git clone -b "$CONFIGURATION_BRANCH" "$CONFIGURATION_REPOSITORY_URL" "$CONFIGURATION_FOLDER" &> /dev/null; then
         echo "Private configuration details were successfully cloned under the '$CONFIGURATION_FOLDER' folder."
     else
         echo "Your GitHub account cannot access private project configuration details. Skipped."
