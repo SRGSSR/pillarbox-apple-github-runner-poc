@@ -40,6 +40,7 @@ jobs:
           cd ~/macos-ci-setup
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && rm -rf Configuration"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
+          ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain -P '6YXTQTG8JJ'"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
 
   # check-quality:
