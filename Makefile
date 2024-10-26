@@ -1,7 +1,8 @@
 #!/usr/bin/xcrun make -f
 
 CONFIGURATION_REPOSITORY_URL=https://github.com/SRGSSR/pillarbox-apple-configuration.git
-CONFIGURATION_COMMIT_SHA1=dad52a4242c7997c179073caec03b8d6e718fc03
+CONFIGURATION_COMMIT_SHA1=HEAD
+CONFIGURATION_BRANCH=main
 
 .PHONY: all
 all: help
@@ -10,7 +11,7 @@ all: help
 setup:
 	@echo "Setting up the project..."
 	@bundle install > /dev/null
-	@Scripts/checkout-configuration.sh "${CONFIGURATION_REPOSITORY_URL}" "${CONFIGURATION_COMMIT_SHA1}" Configuration
+	@Scripts/checkout-configuration.sh "${CONFIGURATION_REPOSITORY_URL}" "${CONFIGURATION_BRANCH}" "${CONFIGURATION_COMMIT_SHA1}" Configuration
 	@echo "... done.\n"
 
 .PHONY: fastlane
