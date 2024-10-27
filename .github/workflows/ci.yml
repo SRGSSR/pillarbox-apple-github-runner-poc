@@ -40,7 +40,8 @@ jobs:
           cd ~/macos-ci-setup
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && rm -rf Configuration"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
-          ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain -P '6YXTQTG8JJ'"
+          ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
+          ./run-vm-shell-command.sh $VM_NAME "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
 
   # check-quality:
@@ -86,7 +87,7 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && make archive-demo-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
   archive-demo-tvos:
     needs: [test-ios, test-tvos]
@@ -95,7 +96,7 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && make archive-demo-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
   clean:
     runs-on:
