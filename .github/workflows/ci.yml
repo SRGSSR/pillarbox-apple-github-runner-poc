@@ -86,7 +86,7 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make archive-demo-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && make archive-demo-ios"
 
   archive-demo-tvos:
     needs: [test-ios, test-tvos]
@@ -95,7 +95,7 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make archive-demo-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain && make archive-demo-tvos"
 
   clean:
     runs-on:
