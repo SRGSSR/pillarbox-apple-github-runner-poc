@@ -21,7 +21,7 @@ DerivedData/
 
 /fastlane/README.md
 /fastlane/report.xml
-/fastlane/test_output
+/fastlane/test_output*
 /Configuration
 
 /.bundle
