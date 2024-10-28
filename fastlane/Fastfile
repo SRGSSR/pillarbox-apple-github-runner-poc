@@ -198,7 +198,7 @@ def run_package_tests(platform_id, scheme_name)
     number_of_retries: 3,
     clean: true,
     fail_build: false,
-    xcargs: '-testLanguage en -testRegion en_US'
+    xcargs: '-testLanguage en -testRegion en_US -skipPackagePluginValidation'
   )
   trainer(
     path: 'fastlane/test_output',
