@@ -98,14 +98,14 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
-  clean:
-    runs-on:
-      labels: [tart, macos]
-    needs: [archive-demo-ios, archive-demo-tvos]
-    if: always()
-    steps:
-      - name: Stop and remove the VM
-        run: |
-          set +e
-          tart stop $VM_NAME
-          tart delete $VM_NAME
+  # clean:
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   needs: [archive-demo-ios, archive-demo-tvos]
+  #   if: always()
+  #   steps:
+  #     - name: Stop and remove the VM
+  #       run: |
+  #         set +e
+  #         tart stop $VM_NAME
+  #         tart delete $VM_NAME
