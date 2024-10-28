@@ -65,17 +65,13 @@ test-streams-stop:
 .PHONY: test-ios
 test-ios: setup
 	@echo "Running unit tests..."
-	@Scripts/test-streams.sh -s
 	@bundle exec fastlane test_ios
-	@Scripts/test-streams.sh -k
 	@echo "... done.\n"
 
 .PHONY: test-tvos
 test-tvos: setup
 	@echo "Running unit tests..."
-	@Scripts/test-streams.sh -s
 	@bundle exec fastlane test_tvos
-	@Scripts/test-streams.sh -k
 	@echo "... done.\n"
 
 .PHONY: check-quality
