@@ -17,9 +17,9 @@ jobs:
       - name: Install tools
         run: |
           cd ~/macos-ci-setup
+          ./brew-fetch.sh $VM_NAME "mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./create-vm-for-project.sh $VM_NAME $VM_IMAGE
           ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" $VM_NAME
-          ./brew-fetch-and-sync.sh $VM_NAME "mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./run-vm-shell-command.sh $VM_NAME "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./run-vm-shell-command.sh $VM_NAME "rbenv install --skip-existing 3.3.5"
           ./run-vm-shell-command.sh $VM_NAME "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
