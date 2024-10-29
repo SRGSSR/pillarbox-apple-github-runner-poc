@@ -2,9 +2,9 @@
 name: CI
 on: [push]
 env:
-  MACOS_CI_SETUP_TOKEN: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
-  VM_NAME: sequoia-for-pillarbox
-  VM_IMAGE: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
+  macos_ci_setup_token: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
+  vm_name: sequoia-for-pillarbox
+  vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
 jobs:
   install-tools:
     runs-on:
@@ -13,22 +13,22 @@ jobs:
       - name: Clone macos-ci-setup repository
         run: |
           rm -rf ~/macos-ci-setup
-          git clone -b add-scripts https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
+          git clone -b add-scripts https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
       - name: Install tools
         run: |
           cd ~/macos-ci-setup
-          ./brew-fetch.sh $VM_NAME "mint shellcheck markdownlint-cli yamllint ffmpeg"
-          ./create-vm-for-project.sh $VM_NAME $VM_IMAGE
-          ./clone-repo-in-vm.sh "https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/fake-and-temporary-pa-for-runners.git" $VM_NAME
-          ./run-vm-shell-command.sh $VM_NAME "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
-          ./run-vm-shell-command.sh $VM_NAME "rbenv install --skip-existing 3.3.5"
-          ./run-vm-shell-command.sh $VM_NAME "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
-          ./run-vm-shell-command.sh $VM_NAME "rbenv init - >> ~/.zshrc"
-          ./run-vm-shell-command.sh $VM_NAME "rbenv global 3.3.5"
-          ./run-vm-shell-command.sh $VM_NAME "sudo gem install bundler -v 2.5.22"
-          ./run-vm-shell-command.sh $VM_NAME "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh $VM_NAME "chmod a+x /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh $VM_NAME "source ~/.zshrc"
+          ./brew-fetch.sh ${{ env.vm_name }} "mint shellcheck markdownlint-cli yamllint ffmpeg"
+          ./create-vm-for-project.sh ${{ env.vm_name }} ${{ env.vm_image }}
+          ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ github.ref_name }} "https://${{ env.macos_ci_setup_token }}@github.com/${{ github.repository }}.git"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "brew install mint shellcheck markdownlint-cli yamllint ffmpeg"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv install --skip-existing 3.3.5"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv init - >> ~/.zshrc"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv global 3.3.5"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "sudo gem install bundler -v 2.5.22"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "chmod a+x /opt/homebrew/bin/shaka-packager"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "source ~/.zshrc"
 
   setup-project:
     needs: install-tools
@@ -38,11 +38,11 @@ jobs:
       - name: Setup project
         run: |
           cd ~/macos-ci-setup
-          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && rm -rf Configuration"
-          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && Scripts/checkout-configuration.sh https://$MACOS_CI_SETUP_TOKEN@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
-          ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
-          ./run-vm-shell-command.sh $VM_NAME "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
-          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && rm -rf Configuration"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && Scripts/checkout-configuration.sh https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
 
   # check-quality:
   #   needs: setup-project
@@ -51,7 +51,7 @@ jobs:
   #   steps:
   #     - name: Run the quality check
   #       run: |
-  #         ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make check-quality"
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make check-quality"
 
   run-streams:
     needs: install-tools
@@ -60,7 +60,7 @@ jobs:
     steps:
       - name: Run test streams
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-streams-start"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
   download-spm-dependencies:
     needs: setup-project
@@ -69,7 +69,7 @@ jobs:
     steps:
       - name: Download SPM packages
         run: |
-          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && swift package resolve"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && swift package resolve"
 
   test-ios:
     needs: [run-streams, download-spm-dependencies]
@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Run the iOS tests
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
     needs: [run-streams, download-spm-dependencies]
@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Run the tvOS tests
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
     needs: test-ios
@@ -96,7 +96,7 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
   archive-demo-tvos:
     needs: test-tvos
@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
   clean:
     runs-on:
@@ -116,5 +116,5 @@ jobs:
       - name: Stop and remove the VM
         run: |
           set +e
-          tart stop $VM_NAME
-          tart delete $VM_NAME
+          tart stop ${{ env.vm_name }}
+          tart delete ${{ env.vm_name }}
