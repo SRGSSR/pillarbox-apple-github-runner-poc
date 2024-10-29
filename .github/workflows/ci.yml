@@ -43,6 +43,7 @@ jobs:
           ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
           ./run-vm-shell-command.sh $VM_NAME "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
+          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && swift package resolve"
 
   # check-quality:
   #   needs: setup-project
