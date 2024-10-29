@@ -43,7 +43,6 @@ jobs:
           ./run-vm-shell-command.sh $VM_NAME "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
           ./run-vm-shell-command.sh $VM_NAME "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make setup"
-          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && swift package resolve"
 
   # check-quality:
   #   needs: setup-project
@@ -63,8 +62,17 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-streams-start"
 
+  download-spm-dependencies:
+    needs: setup-project
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Download SPM packages
+        run: |
+          ./run-vm-shell-command.sh $VM_NAME "cd ~/_repo && swift package resolve"
+
   test-ios:
-    needs: [run-streams, setup-project]
+    needs: [run-streams, download-spm-dependencies]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -73,7 +81,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: [run-streams, setup-project]
+    needs: [run-streams, download-spm-dependencies]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -82,7 +90,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
-    needs: [test-ios, test-tvos]
+    needs: test-ios
     runs-on:
       labels: [tart, macos]
     steps:
@@ -91,7 +99,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh $VM_NAME "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
   archive-demo-tvos:
-    needs: [test-ios, test-tvos]
+    needs: test-tvos
     runs-on:
       labels: [tart, macos]
     steps:
