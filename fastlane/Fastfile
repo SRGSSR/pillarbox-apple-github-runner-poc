@@ -192,10 +192,8 @@ end
 def run_package_tests(platform_id, scheme_name)
   output_path = "fastlane/test_output_#{platform_id}"
   derived_data_path = "#{Dir.home}/Library/Developer/Xcode/DerivedData/#{platform_id}"
-  cloned_source_packages_path = "#{Dir.home}/Library/Caches/org.swift.swiftpm/#{platform_id}"
   FileUtils.mkdir_p(output_path)
   FileUtils.mkdir_p(derived_data_path)
-  FileUtils.mkdir_p(cloned_source_packages_path)
   run_tests(
     scheme: scheme_name,
     device: DEVICES[platform_id],
@@ -203,7 +201,6 @@ def run_package_tests(platform_id, scheme_name)
     result_bundle: true,
     output_directory: output_path,
     derived_data_path: derived_data_path,
-    cloned_source_packages_path: cloned_source_packages_path,
     number_of_retries: 3,
     clean: true,
     fail_build: false,
