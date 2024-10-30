@@ -204,7 +204,6 @@ def run_package_tests(platform_id, scheme_name)
     result_bundle: true,
     output_directory: output_path,
     derived_data_path: derived_data_path,
-    skip_package_dependencies_resolution: true,
     number_of_retries: 3,
     clean: true,
     fail_build: false,
