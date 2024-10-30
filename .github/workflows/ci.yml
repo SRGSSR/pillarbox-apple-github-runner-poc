@@ -116,5 +116,6 @@ jobs:
       - name: Stop and remove the VM
         run: |
           set +e
+          ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
           tart stop ${{ env.vm_name }}
           tart delete ${{ env.vm_name }}
