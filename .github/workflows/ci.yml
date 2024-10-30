@@ -20,7 +20,7 @@ jobs:
           ./brew-fetch.sh ${{ env.vm_name }} "mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./create-vm-for-project.sh ${{ env.vm_name }} ${{ env.vm_image }}
           ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ github.ref_name }} "https://${{ env.macos_ci_setup_token }}@github.com/${{ github.repository }}.git"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "HOMEBREW_MAKE_JOBS=4 brew install --quiet mint shellcheck markdownlint-cli yamllint ffmpeg"
+          ./run-vm-shell-command.sh ${{ env.vm_name }} "brew install --quiet mint shellcheck markdownlint-cli yamllint ffmpeg"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv install --skip-existing 3.3.5"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv init - >> ~/.zshrc"
