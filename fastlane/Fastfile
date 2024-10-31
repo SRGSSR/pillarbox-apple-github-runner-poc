@@ -205,7 +205,6 @@ def run_package_tests(platform_id, scheme_name)
     output_directory: output_path,
     derived_data_path: derived_data_path,
     number_of_retries: 3,
-    clean: false,
     fail_build: false,
     xcargs: '-testLanguage en -testRegion en_US'
   )
