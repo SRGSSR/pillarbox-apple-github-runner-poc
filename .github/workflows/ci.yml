@@ -43,6 +43,17 @@ jobs:
           ./run-vm-shell-command.sh ${{ env.vm_name }} "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
+      
+  cache-management:
+    needs: install-tools
+    runs-on:
+      labels: [tart, macos]
+    steps:
+      - name: Setup project
+        run: |
+          cd ~/macos-ci-setup
+          ./restore-vm-caches.sh ${{ env.vm_name }}
+
 
   # check-quality:
   #   needs: setup-project
@@ -63,7 +74,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
   test-ios:
-    needs: [run-streams, setup-project]
+    needs: [run-streams, setup-project, cache-management]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -72,7 +83,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: test-ios
+    needs: [run-streams, setup-project, cache-management]
     runs-on:
       labels: [tart, macos]
     steps:
