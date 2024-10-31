@@ -62,17 +62,8 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
-  download-spm-dependencies:
-    needs: setup-project
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Download SPM packages
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && swift package resolve"
-
   test-ios:
-    needs: [run-streams, download-spm-dependencies]
+    needs: [run-streams, setup-project]
     runs-on:
       labels: [tart, macos]
     steps:
@@ -81,7 +72,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: [run-streams, download-spm-dependencies]
+    needs: test-ios
     runs-on:
       labels: [tart, macos]
     steps:
