@@ -119,5 +119,4 @@ jobs:
         run: |
           set +e
           ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
-          tart stop ${{ env.vm_name }}
-          tart delete ${{ env.vm_name }}
+          orchard delete vm ${{ env.vm_name }}
