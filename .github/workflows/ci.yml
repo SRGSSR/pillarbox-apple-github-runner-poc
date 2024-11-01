@@ -6,7 +6,7 @@ env:
   vm_name: sequoia-for-pillarbox
   vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
 jobs:
-  install-tools:
+  clone-setup-project:
     runs-on:
       labels: [tart, macos]
     steps:
@@ -14,109 +14,196 @@ jobs:
         run: |
           rm -rf ~/macos-ci-setup
           git clone -b add-scripts https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
-      - name: Install tools
+      - name: Upload macos-ci-setup as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-ci-setup
+          path: ~/macos-ci-setup
+      - name: Set script permissions
+        run: chmod +x ~/macos-ci-setup/runners-checker.sh
+      - name: Save first runner
         run: |
-          cd ~/macos-ci-setup
-          ./brew-fetch.sh ${{ env.vm_name }} "mint shellcheck markdownlint-cli yamllint ffmpeg"
-          ./create-vm-for-project.sh ${{ env.vm_name }} ${{ env.vm_image }}
-          ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ github.ref_name }} "https://${{ env.macos_ci_setup_token }}@github.com/${{ github.repository }}.git"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "brew install --quiet mint shellcheck markdownlint-cli yamllint ffmpeg"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv install --skip-existing 3.3.5"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv init - >> ~/.zshrc"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv global 3.3.5"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "sudo gem install bundler -v 2.5.22"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "chmod a+x /opt/homebrew/bin/shaka-packager"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "source ~/.zshrc"
-
-  setup-project:
-    needs: install-tools
+          echo $RUNNER_NAME > runner_name.txt
+      - name: Upload runner name as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: runner_name
+          path: runner_name.txt
+  sleep-job-1:
+    needs: [clone-setup-project]
     runs-on:
       labels: [tart, macos]
     steps:
-      - name: Setup project
+      - name: Download macos-ci-setup artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-ci-setup
+          path: ~/macos-ci-setup
+      - name: Download runner name artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: runner_name
+      - name: Set runner name variable
         run: |
-          cd ~/macos-ci-setup
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && rm -rf Configuration"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && Scripts/checkout-configuration.sh https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
-          ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
-      
-  cache-management:
-    needs: install-tools
+          runner_name=$(cat runner_name.txt)
+          echo "runner_name=$runner_name" >> "$GITHUB_ENV"
+      - name: Debug Information
+        run: |
+          echo "First Runner Name: ${{ env.runner_name }}"
+          echo "Current Runner Name: $RUNNER_NAME"
+      - name: Check Runner
+        if: ${{ env.is_running_on_same_pool == '0' }}
+        run: |
+          ~/macos-ci-setup/runners-checker.sh ${{ env.runner_name }} $RUNNER_NAME
+          echo "is_running_on_same_pool=$?" >> "$GITHUB_ENV"
+      - name: Sleep 1
+        if: ${{ env.is_running_on_same_pool == '0' }}
+        run: |
+          sleep 10
+  sleep-job-2:
+    needs: [clone-setup-project]
     runs-on:
       labels: [tart, macos]
     steps:
-      - name: Setup project
+      - name: Download macos-ci-setup artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: macos-ci-setup
+          path: ~/macos-ci-setup
+      - name: Download runner name artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: runner_name
+      - name: Set runner name variable
         run: |
-          cd ~/macos-ci-setup
-          ./restore-vm-caches.sh ${{ env.vm_name }}
+          runner_name=$(cat runner_name.txt)
+          echo "runner_name=$runner_name" >> "$GITHUB_ENV"
+      - name: Debug Information
+        run: |
+          echo "First Runner Name: ${{ env.runner_name }}"
+          echo "Current Runner Name: $RUNNER_NAME"
+      - name: Check Runner
+        if: ${{ env.is_running_on_same_pool == '0' }}
+        run: |
+          ~/macos-ci-setup/runners-checker.sh ${{ env.runner_name }} $RUNNER_NAME
+          echo "is_running_on_same_pool=$?" >> "$GITHUB_ENV"
+      - name: Sleep 2
+        if: ${{ env.is_running_on_same_pool == '0' }}
+        run: |
+          sleep 10
 
-
-  # check-quality:
-  #   needs: setup-project
+  # install-tools:
   #   runs-on:
   #     labels: [tart, macos]
   #   steps:
-  #     - name: Run the quality check
+  #     - name: Clone macos-ci-setup repository
   #       run: |
-  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make check-quality"
+  #         rm -rf ~/macos-ci-setup
+  #         git clone -b add-scripts https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
+  #     - name: Install tools
+  #       run: |
+  #         cd ~/macos-ci-setup
+  #         ./brew-fetch.sh ${{ env.vm_name }} "mint shellcheck markdownlint-cli yamllint ffmpeg"
+  #         ./create-vm-for-project.sh ${{ env.vm_name }} ${{ env.vm_image }}
+  #         ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ github.ref_name }} "https://${{ env.macos_ci_setup_token }}@github.com/${{ github.repository }}.git"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "brew install --quiet mint shellcheck markdownlint-cli yamllint ffmpeg"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv install --skip-existing 3.3.5"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "echo 'export PATH=\"$HOME/.rbenv/bin:$PATH\"' >> ~/.zshrc"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv init - >> ~/.zshrc"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "rbenv global 3.3.5"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "sudo gem install bundler -v 2.5.22"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "curl --location https://github.com/shaka-project/shaka-packager/releases/download/v3.2.0/packager-osx-arm64 -o /opt/homebrew/bin/shaka-packager"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "chmod a+x /opt/homebrew/bin/shaka-packager"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "source ~/.zshrc"
 
-  run-streams:
-    needs: install-tools
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Run test streams
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
+  # setup-project:
+  #   needs: install-tools
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Setup project
+  #       run: |
+  #         cd ~/macos-ci-setup
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && rm -rf Configuration"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && Scripts/checkout-configuration.sh https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/pillarbox-apple-configuration.git certificate HEAD Configuration"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
+  #         ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
+      
+  # cache-management:
+  #   needs: install-tools
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Setup project
+  #       run: |
+  #         cd ~/macos-ci-setup
+  #         ./restore-vm-caches.sh ${{ env.vm_name }}
 
-  test-ios:
-    needs: [run-streams, setup-project, cache-management]
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Run the iOS tests
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
-  test-tvos:
-    needs: [run-streams, setup-project, cache-management]
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Run the tvOS tests
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-tvos"
+  # # check-quality:
+  # #   needs: setup-project
+  # #   runs-on:
+  # #     labels: [tart, macos]
+  # #   steps:
+  # #     - name: Run the quality check
+  # #       run: |
+  # #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make check-quality"
 
-  archive-demo-ios:
-    needs: test-ios
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Archive the iOS demo
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
+  # run-streams:
+  #   needs: install-tools
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Run test streams
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
-  archive-demo-tvos:
-    needs: test-tvos
-    runs-on:
-      labels: [tart, macos]
-    steps:
-      - name: Archive the tvOS demo
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
+  # test-ios:
+  #   needs: [run-streams, setup-project, cache-management]
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Run the iOS tests
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
-  clean:
-    runs-on:
-      labels: [tart, macos]
-    needs: [archive-demo-ios, archive-demo-tvos]
-    if: always()
-    steps:
-      - name: Stop and remove the VM
-        run: |
-          set +e
-          ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
-          orchard delete vm ${{ env.vm_name }}
+  # test-tvos:
+  #   needs: [run-streams, setup-project, cache-management]
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Run the tvOS tests
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-tvos"
+
+  # archive-demo-ios:
+  #   needs: test-ios
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Archive the iOS demo
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
+
+  # archive-demo-tvos:
+  #   needs: test-tvos
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   steps:
+  #     - name: Archive the tvOS demo
+  #       run: |
+  #         ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
+
+  # clean:
+  #   runs-on:
+  #     labels: [tart, macos]
+  #   needs: [archive-demo-ios, archive-demo-tvos]
+  #   if: always()
+  #   steps:
+  #     - name: Stop and remove the VM
+  #       run: |
+  #         set +e
+  #         ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
+  #         tart stop ${{ env.vm_name }}
+  #         tart delete ${{ env.vm_name }}
