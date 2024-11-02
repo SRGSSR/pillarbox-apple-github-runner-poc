@@ -9,86 +9,46 @@ jobs:
   clone-setup-project:
     runs-on:
       labels: [tart, macos]
+    outputs:
+      runner_labels: ${{ steps.runner-labels.outputs.runner_labels }}
     steps:
       - name: Clone macos-ci-setup repository
         run: |
           rm -rf ~/macos-ci-setup
           git clone -b add-scripts https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
-      - name: Upload macos-ci-setup as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos-ci-setup
-          path: ~/macos-ci-setup
-      - name: Set script permissions
-        run: chmod +x ~/macos-ci-setup/runners-checker.sh
-      - name: Save first runner
+      - name: Runner labels
+        id: runner-labels
         run: |
-          echo $RUNNER_NAME > runner_name.txt
-      - name: Upload runner name as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: runner_name
-          path: runner_name.txt
+          runner_labels=$(~/macos-ci-setup/runner-labels.sh $RUNNER_NAME)
+          echo "runner_labels=$runner_labels" >> $GITHUB_OUTPUT
+      
+      - name: Debug Runner Labels
+        run: |
+          echo "Runner labels: ${{ steps.runner-labels.outputs.runner_labels }}"
+
   sleep-job-1:
-    needs: [clone-setup-project]
-    runs-on:
-      labels: [tart, macos]
+    needs: clone-setup-project
+    if: ${{ needs.clone-setup-project.outputs.runner_labels != '' }}
+    runs-on: ${{ needs.clone-setup-project.outputs.runner_labels }}
     steps:
-      - name: Download macos-ci-setup artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-ci-setup
-          path: ~/macos-ci-setup
-      - name: Download runner name artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: runner_name
-      - name: Set runner name variable
-        run: |
-          runner_name=$(cat runner_name.txt)
-          echo "runner_name=$runner_name" >> "$GITHUB_ENV"
       - name: Debug Information
         run: |
-          echo "First Runner Name: ${{ env.runner_name }}"
+          echo "First Runner Name: ${{ needs.clone-setup-project.outputs.runner_labels }}"
           echo "Current Runner Name: $RUNNER_NAME"
-      - name: Check Runner
-        if: ${{ env.is_running_on_same_pool == '0' }}
-        run: |
-          ~/macos-ci-setup/runners-checker.sh ${{ env.runner_name }} $RUNNER_NAME
-          echo "is_running_on_same_pool=$?" >> "$GITHUB_ENV"
       - name: Sleep 1
-        if: ${{ env.is_running_on_same_pool == '0' }}
         run: |
           sleep 10
+
   sleep-job-2:
-    needs: [clone-setup-project]
-    runs-on:
-      labels: [tart, macos]
+    needs: clone-setup-project
+    if: ${{ needs.clone-setup-project.outputs.runner_labels != '' }}
+    runs-on: ${{ needs.clone-setup-project.outputs.runner_labels }}
     steps:
-      - name: Download macos-ci-setup artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: macos-ci-setup
-          path: ~/macos-ci-setup
-      - name: Download runner name artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: runner_name
-      - name: Set runner name variable
-        run: |
-          runner_name=$(cat runner_name.txt)
-          echo "runner_name=$runner_name" >> "$GITHUB_ENV"
       - name: Debug Information
         run: |
-          echo "First Runner Name: ${{ env.runner_name }}"
+          echo "First Runner Name: ${{ needs.clone-setup-project.outputs.runner_labels }}"
           echo "Current Runner Name: $RUNNER_NAME"
-      - name: Check Runner
-        if: ${{ env.is_running_on_same_pool == '0' }}
-        run: |
-          ~/macos-ci-setup/runners-checker.sh ${{ env.runner_name }} $RUNNER_NAME
-          echo "is_running_on_same_pool=$?" >> "$GITHUB_ENV"
       - name: Sleep 2
-        if: ${{ env.is_running_on_same_pool == '0' }}
         run: |
           sleep 10
 
