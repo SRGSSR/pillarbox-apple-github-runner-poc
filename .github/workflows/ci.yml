@@ -77,7 +77,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
   test-ios:
-    needs: [run-streams, setup-project, cache-management]
+    needs: [install-tools, run-streams, setup-project, cache-management]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     steps:
       - name: Run the iOS tests
@@ -85,7 +85,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: [run-streams, setup-project, cache-management]
+    needs: [install-tools, run-streams, setup-project, cache-management]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     steps:
       - name: Run the tvOS tests
@@ -93,7 +93,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
-    needs: test-ios
+    needs: [install-tools, test-ios]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     steps:
       - name: Archive the iOS demo
@@ -101,7 +101,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
   archive-demo-tvos:
-    needs: test-tvos
+    needs: [install-tools, test-tvos]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     steps:
       - name: Archive the tvOS demo
@@ -109,7 +109,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
   clean:
-    needs: [archive-demo-ios, archive-demo-tvos]
+    needs: [install-tools, archive-demo-ios, archive-demo-tvos]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     if: always() || failure()
     steps:
