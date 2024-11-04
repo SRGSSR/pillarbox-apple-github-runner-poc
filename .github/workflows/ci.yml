@@ -54,7 +54,7 @@ jobs:
     needs: install-tools
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
-      - name: Setup project
+      - name: Restore caches on VM
         run: |
           cd ~/macos-ci-setup
           ./restore-vm-caches.sh ${{ env.vm_name }}
@@ -79,7 +79,7 @@ jobs:
     needs: [install-tools, cache-management, run-streams, setup-project]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
-      - name: Run the iOS tests
+      - name: Resolve SPM dependencies
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && swift package resolve"
 
