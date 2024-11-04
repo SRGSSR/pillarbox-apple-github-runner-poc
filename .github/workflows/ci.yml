@@ -49,15 +49,6 @@ jobs:
           ./run-vm-shell-command.sh ${{ env.vm_name }} "security unlock-keychain -p 'admin' ~/Library/Keychains/login.keychain-db && security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 -k ~/Library/Keychains/login.keychain-db -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
-      
-  cache-management:
-    needs: install-tools
-    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
-    steps:
-      - name: Restore caches on VM
-        run: |
-          cd ~/macos-ci-setup
-          ./restore-vm-caches.sh ${{ env.vm_name }}
 
   # check-quality:
   #   needs: setup-project
@@ -76,7 +67,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
   test-ios:
-    needs: [install-tools, cache-management, run-streams, setup-project]
+    needs: [install-tools, run-streams, setup-project]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the iOS tests
@@ -84,7 +75,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: [install-tools, cache-management, run-streams, setup-project]
+    needs: [install-tools, run-streams, setup-project]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the tvOS tests
@@ -115,6 +106,5 @@ jobs:
       - name: Stop and remove the VM
         run: |
           set +e
-          ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
           tart stop ${{ env.vm_name }}
           tart delete ${{ env.vm_name }}
