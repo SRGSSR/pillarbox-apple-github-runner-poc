@@ -10,17 +10,17 @@ jobs:
     runs-on:
       labels: [tart, macos]
     outputs:
-      runner-group-label: ${{ steps.runner-labels.outputs.runner-group-label }}
+      runner_group_label: ${{ steps.runner-group-label.outputs.runner_group_label }}
     steps:
-      - name: Runner labels
-        id: runner-labels
-        run: |
-          runner-group-label=$(~/macos-ci-setup/runner-group-label.sh $RUNNER_NAME)
-          echo "runner-group-label=$runner-group-label" >> $GITHUB_OUTPUT
       - name: Clone macos-ci-setup repository
         run: |
           rm -rf ~/macos-ci-setup
           git clone -b add-scripts https://${{ env.macos_ci_setup_token }}@github.com/SRGSSR/macos-ci-setup.git ~/macos-ci-setup
+      - name: Runner labels
+        id: runner-group-label
+        run: |
+          runner_group_label=$(~/macos-ci-setup/runner-group-label.sh $RUNNER_NAME)
+          echo "runner_group_label=$runner_group_label" >> $GITHUB_OUTPUT
       - name: Install tools
         run: |
           cd ~/macos-ci-setup
@@ -39,7 +39,7 @@ jobs:
 
   setup-project:
     needs: install-tools
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Setup project
         run: |
@@ -52,7 +52,7 @@ jobs:
       
   cache-management:
     needs: install-tools
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Setup project
         run: |
@@ -61,7 +61,7 @@ jobs:
 
   # check-quality:
   #   needs: setup-project
-  #   runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+  #   runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
   #   steps:
   #     - name: Run the quality check
   #       run: |
@@ -69,7 +69,7 @@ jobs:
 
   run-streams:
     needs: install-tools
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run test streams
         run: |
@@ -77,7 +77,7 @@ jobs:
 
   resolve-spm-dependencies:
     needs: [install-tools, cache-management, run-streams, setup-project]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the iOS tests
         run: |
@@ -85,7 +85,7 @@ jobs:
 
   test-ios:
     needs: [install-tools, resolve-spm-dependencies]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the iOS tests
         run: |
@@ -93,7 +93,7 @@ jobs:
 
   test-tvos:
     needs: [install-tools, resolve-spm-dependencies]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the tvOS tests
         run: |
@@ -101,7 +101,7 @@ jobs:
 
   archive-demo-ios:
     needs: [install-tools, test-ios]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Archive the iOS demo
         run: |
@@ -109,7 +109,7 @@ jobs:
 
   archive-demo-tvos:
     needs: [install-tools, test-tvos]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Archive the tvOS demo
         run: |
@@ -117,7 +117,7 @@ jobs:
 
   clean:
     needs: [install-tools, archive-demo-ios, archive-demo-tvos]
-    runs-on: ${{ needs.install-tools.outputs.runner-group-label }}
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     if: always() || failure()
     steps:
       - name: Stop and remove the VM
