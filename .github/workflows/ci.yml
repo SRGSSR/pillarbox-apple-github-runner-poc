@@ -50,14 +50,14 @@ jobs:
           ./run-vm-shell-command.sh ${{ env.vm_name }} "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' ~/Library/Keychains/login.keychain-db"
           ./run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make setup"
       
-  # cache-management:
-  #   needs: install-tools
-  #   runs-on: ${{ needs.install-tools.outputs.runner_labels }}
-  #   steps:
-  #     - name: Setup project
-  #       run: |
-  #         cd ~/macos-ci-setup
-  #         ./restore-vm-caches.sh ${{ env.vm_name }}
+  cache-management:
+    needs: install-tools
+    runs-on: ${{ needs.install-tools.outputs.runner_labels }}
+    steps:
+      - name: Setup project
+        run: |
+          cd ~/macos-ci-setup
+          ./restore-vm-caches.sh ${{ env.vm_name }}
 
 
   # check-quality:
@@ -77,7 +77,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
   resolve-spm-dependencies:
-    needs: [install-tools, run-streams, setup-project]
+    needs: [install-tools, cache-management, run-streams, setup-project]
     runs-on: ${{ needs.install-tools.outputs.runner_labels }}
     steps:
       - name: Run the iOS tests
@@ -124,5 +124,6 @@ jobs:
       - name: Stop and remove the VM
         run: |
           set +e
+          ~/macos-ci-setup/store-vm-caches.sh ${{ env.vm_name }}
           tart stop ${{ env.vm_name }}
           tart delete ${{ env.vm_name }}
