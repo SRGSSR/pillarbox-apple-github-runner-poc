@@ -194,16 +194,13 @@ end
 
 def run_package_tests(platform_id, scheme_name)
   output_path = "fastlane/test_output_#{platform_id}"
-  derived_data_path = "#{Dir.home}/Library/Developer/Xcode/DerivedData/#{platform_id}"
   FileUtils.mkdir_p(output_path)
-  FileUtils.mkdir_p(derived_data_path)
   run_tests(
     scheme: scheme_name,
     device: DEVICES[platform_id],
     package_path: '.',
     result_bundle: true,
     output_directory: output_path,
-    derived_data_path: derived_data_path,
     number_of_retries: 3,
     fail_build: false,
     xcargs: '-testLanguage en -testRegion en_US'
