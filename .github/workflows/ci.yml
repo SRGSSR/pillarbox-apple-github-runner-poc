@@ -66,8 +66,16 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-streams-start"
 
-  test-ios:
+  resolve-spm-dependencies:
     needs: [install-tools, run-streams, setup-project]
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
+    steps:
+      - name: Resolve SPM dependencies
+        run: |
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && xcodebuild -resolvePackageDependencies -verbose"
+
+  test-ios:
+    needs: [install-tools, resolve-spm-dependencies]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the iOS tests
@@ -75,7 +83,7 @@ jobs:
           ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} "cd ~/_repo && make test-ios"
 
   test-tvos:
-    needs: [install-tools, run-streams, setup-project]
+    needs: [install-tools, resolve-spm-dependencies]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Run the tvOS tests
