@@ -116,7 +116,7 @@ def build_and_sign_app(platform_id, configuration_id)
     configuration: CONFIGURATIONS[configuration_id],
     scheme: 'Pillarbox-demo',
     destination: "generic/platform=#{PLATFORMS[platform_id]}",
-    derived_data_path: derived_data_path,
+    derived_data_path:,
     export_team_id: ENV.fetch('TEAM_ID'),
     output_directory: 'Binaries',
     xcargs: "-authenticationKeyIssuerID #{ENV.fetch('KEY_ISSUER_ID')} -authenticationKeyID #{ENV.fetch('KEY_ID')} " \
@@ -203,7 +203,7 @@ def run_package_tests(platform_id, scheme_name)
     package_path: '.',
     result_bundle: true,
     output_directory: output_path,
-    derived_data_path: derived_data_path,
+    derived_data_path:,
     number_of_retries: 3,
     fail_build: false,
     xcargs: '-testLanguage en -testRegion en_US'
