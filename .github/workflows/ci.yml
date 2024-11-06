@@ -5,6 +5,7 @@ env:
   macos_ci_setup_token: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
   vm_name: sequoia-for-pillarbox
   vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
+  branch_name: ${{ github.head_ref }}
 jobs:
   install-tools:
     runs-on:
@@ -37,7 +38,7 @@ jobs:
 
           ./create-vm-for-project.sh ${{ env.vm_name }} ${{ env.vm_image }}
 
-          ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ github.ref_name }} \
+          ./clone-repo-in-vm.sh ${{ env.vm_name }} ${{ env.branch_name }} \
           "https://${{ env.macos_ci_setup_token }}\
           @github.com/${{ github.repository }}.git"
 
