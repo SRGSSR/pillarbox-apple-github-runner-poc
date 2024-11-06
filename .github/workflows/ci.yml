@@ -172,7 +172,6 @@ jobs:
     timeout-minutes: 2
     needs: [install-tools, archive-demo-ios, archive-demo-tvos]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
-    if: always()
     steps:
       - name: Stop and remove the VM
         run: |
