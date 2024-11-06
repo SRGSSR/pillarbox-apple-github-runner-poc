@@ -169,7 +169,6 @@ jobs:
           ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
   clean:
-    timeout-minutes: 2
     needs: [install-tools, archive-demo-ios, archive-demo-tvos]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     if: always()
