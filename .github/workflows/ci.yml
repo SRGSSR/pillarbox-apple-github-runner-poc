@@ -1,6 +1,6 @@
 ---
 name: CI
-on: [push]
+on: [pull_request]
 env:
   macos_ci_setup_token: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
   vm_name: sequoia-for-pillarbox
