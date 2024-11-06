@@ -10,8 +10,8 @@ jobs:
     runs-on:
       labels: [tart, macos]
     outputs:
-      runner_group_label: |
-        ${{ steps.runner-group-label.outputs.runner_group_label }}
+      runner_group_label:
+        "${{ steps.runner-group-label.outputs.runner_group_label }}"
     steps:
       - name: Clone macos-ci-setup repository
         run: |
