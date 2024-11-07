@@ -73,6 +73,15 @@ jobs:
           ./run-vm-shell-command.sh ${{ env.vm_name }} \
           "source ~/.zshrc"
 
+  run-streams:
+    needs: install-tools
+    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
+    steps:
+      - name: Run test streams
+        run: |
+          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} \
+          "cd ~/_repo && make test-streams-start"
+
   setup-project:
     needs: install-tools
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
@@ -112,15 +121,6 @@ jobs:
         run: |
           ~/macos-ci-setup/run-vm-shell-command.sh \
           ${{ env.vm_name }} "cd ~/_repo && make check-quality"
-
-  run-streams:
-    needs: install-tools
-    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
-    steps:
-      - name: Run test streams
-        run: |
-          ~/macos-ci-setup/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "cd ~/_repo && make test-streams-start"
 
   resolve-spm-dependencies:
     needs: [install-tools, run-streams, setup-project]
