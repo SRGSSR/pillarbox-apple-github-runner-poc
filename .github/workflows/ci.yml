@@ -9,8 +9,8 @@ env:
   script_path: ${{ github.workspace }}/../macos-ci-setup
   ci_script_path: ${{ github.workspace }}/.github/workflows/scripts
   repo_url:
-    https://${{ secrets.MACOS_CI_SETUP_TOKEN }}\
-    @github.com/${{ github.repository }}.git
+    "https://${{ secrets.MACOS_CI_SETUP_TOKEN }}@github.com/\
+    ${{ github.repository }}.git"
 jobs:
   install-tools:
     runs-on:

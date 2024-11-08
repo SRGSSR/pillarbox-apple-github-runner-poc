@@ -6,13 +6,6 @@ branch_name="$3"
 repo_url="$4"
 script_path="$5"
 
-echo "=========> Debugging variables <========"
-echo "script_path: $script_path"
-echo "vm_name: $vm_name"
-echo "vm_image: $vm_image"
-echo "branch_name: $branch_name"
-echo "repo_url: $repo_url"
-
 "$script_path/brew-fetch.sh" "$vm_name" "swiftlint shellcheck markdownlint-cli yamllint ffmpeg"
 
 "$script_path/create-vm-for-project.sh" "$vm_name" "$vm_image"
