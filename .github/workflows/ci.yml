@@ -74,8 +74,8 @@ jobs:
 
       - name: Run the quality check
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} "cd ~/_repo && make check-quality"
+          ${{ env.ci_scripts_path }}/vm-check-quality.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }}
 
   resolve-spm-dependencies:
     needs: [install-tools, run-streams, setup-project]
@@ -86,9 +86,8 @@ jobs:
 
       - name: Resolve SPM dependencies
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} \
-          "cd ~/_repo && xcodebuild -resolvePackageDependencies -verbose"
+          ${{ env.ci_scripts_path }}/vm-resolve-spm-dependencies.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }}
 
   test-ios:
     needs: [install-tools, resolve-spm-dependencies]
@@ -99,9 +98,8 @@ jobs:
 
       - name: Run the iOS tests
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} \
-          "cd ~/_repo && make test-ios"
+          ${{ env.ci_scripts_path }}/vm-test.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }} "ios"
 
   test-tvos:
     needs: [install-tools, resolve-spm-dependencies]
@@ -112,9 +110,8 @@ jobs:
 
       - name: Run the tvOS tests
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} \
-          "cd ~/_repo && make test-tvos"
+          ${{ env.ci_scripts_path }}/vm-test.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }} "tvos"
 
   archive-demo-ios:
     needs: [install-tools, test-ios, test-tvos]
@@ -125,10 +122,8 @@ jobs:
 
       - name: Archive the iOS demo
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} \
-          "cd ~/_repo && security unlock-keychain -p 'admin' \
-          ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
+          ${{ env.ci_scripts_path }}/vm-test.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }} "ios"
 
   archive-demo-tvos:
     needs: [install-tools, test-ios, test-tvos]
@@ -139,10 +134,8 @@ jobs:
 
       - name: Archive the tvOS demo
         run: |
-          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
-          ${{ env.vm_name }} \
-          "cd ~/_repo && security unlock-keychain -p 'admin' \
-          ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
+          ${{ env.ci_scripts_path }}/vm-test.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }} "tvos"
 
   clean:
     needs: [install-tools, archive-demo-ios, archive-demo-tvos]

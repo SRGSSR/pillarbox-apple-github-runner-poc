@@ -10,21 +10,16 @@ then
     exit 1
 fi
 
+source "$(dirname $(realpath $0))/unlock-keychain.sh"
+
 repository_path="~/_repo"
-keychain_password="admin"
-keychain_path="~/Library/Keychains/login.keychain-db"
 certificate_path="$repository_path/Configuration/6YXTQTG8JJ_development.p12"
 certificate_password="6YXTQTG8JJ"
-
 configuration_repo="github.com/SRGSSR/pillarbox-apple-configuration.git"
 configuration_dir_path="$repository_path/Configuration"
 configuration_script="$repository_path/Scripts/checkout-configuration.sh"
 configuration_branch="certificate"
 configuration_commit="HEAD"
-
-function unlock_keychain {
-    security unlock-keychain -p $keychain_password $keychain_path
-}
 
 function import_certificate {
     security import $certificate_path -k $keychain_path -P $certificate_password -T /usr/bin/security -T /usr/bin/codesign
