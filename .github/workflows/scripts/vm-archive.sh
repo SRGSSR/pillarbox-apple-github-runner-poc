@@ -6,7 +6,7 @@ platform="$3"
 
 repository_path="~/_repo"
 
-if [[ -z $scripts_path || -z $vm_name || -z $platform ]]
+if [[ -z $scripts_path || -z $vm_name || -z $platform ]]
 then
     echo "[!] Usage: $(echo $0) <scripts_path> <vm_name> <platform>"
     exit 1
