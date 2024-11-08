@@ -39,7 +39,7 @@ function authorize_access_to_certificate_private_key {
 }
 
 $scripts_path/run-vm-shell-command.sh $vm_name "rm -rf $configuration_dir_path"
-$scripts_path/run-vm-shell-command.sh $vm_name "$configuration_script https://$github_token@$configuration_repo $certificate $configuration_commit $configuration_dir_path"
-$scripts_path/run-vm-shell-command.sh $vm_name add_certificate_to_keychain
-$scripts_path/run-vm-shell-command.sh $vm_name authorize_access_to_certificate_private_key
+$scripts_path/run-vm-shell-command.sh $vm_name "$configuration_script https://$github_token@$configuration_repo $configuration_branch $configuration_commit $configuration_dir_path"
+$scripts_path/run-vm-shell-command.sh $vm_name echo $(add_certificate_to_keychain)
+$scripts_path/run-vm-shell-command.sh $vm_name echo $(authorize_access_to_certificate_private_key)
 $scripts_path/run-vm-shell-command.sh $vm_name "cd $repository_path && make setup"
