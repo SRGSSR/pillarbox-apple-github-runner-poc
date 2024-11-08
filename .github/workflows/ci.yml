@@ -6,8 +6,8 @@ env:
   vm_name: sequoia-for-pillarbox
   vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
   branch_name: ${{ github.head_ref }}
-  scripts_path: ${{ github.workspace }}/../macos-ci-setup
-  ci_scripts_path: ${{ github.workspace }}/.github/workflows/scripts
+  scripts_path: "/tmp/.$vm_name/macos-ci-setup"
+  ci_scripts_path: "${{ github.workspace }}/.github/workflows/scripts"
   repo_url:
     "https://${{ secrets.MACOS_CI_SETUP_TOKEN }}@github.com/\
     ${{ github.repository }}.git"
@@ -63,7 +63,7 @@ jobs:
       - name: Setup project
         run: |
           ${{ env.ci_scripts_path }}/setup-project.sh \
-          ${{ env.scripts_path }} ${{ env.vm_name }} {{ env.token }}
+          ${{ env.scripts_path }} ${{ env.vm_name }} ${{ env.token }}
 
   check-quality:
     needs: [install-tools, setup-project]
