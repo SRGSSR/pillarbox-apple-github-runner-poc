@@ -6,8 +6,8 @@ env:
   vm_name: sequoia-for-pillarbox
   vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
   branch_name: ${{ github.head_ref }}
-  script_path: ${{ github.workspace }}/../macos-ci-setup
-  ci_script_path: ${{ github.workspace }}/.github/workflows/scripts
+  scripts_path: ${{ github.workspace }}/../macos-ci-setup
+  ci_scripts_path: ${{ github.workspace }}/.github/workflows/scripts
   repo_url:
     "https://${{ secrets.MACOS_CI_SETUP_TOKEN }}@github.com/\
     ${{ github.repository }}.git"
@@ -19,27 +19,27 @@ jobs:
       runner_group_label:
         ${{ steps.runner-group-label.outputs.runner_group_label }}
     steps:
-      - name: Clone macos-ci-setup repository
-        run: |
-          rm -rf ${{ env.script_path }}
-          git clone -b add-scripts \
-          https://${{ env.token }}\
-          @github.com/SRGSSR/macos-ci-setup.git ${{ env.script_path }}
-
-      - name: Runner labels
-        id: runner-group-label
-        run: |
-          echo "runner_group_label=$(${{ env.script_path }}\
-          /runner-group-label.sh $RUNNER_NAME)" >> $GITHUB_OUTPUT
-
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Clone macos-ci-setup repository
+        run: |
+          ${{ env.ci_scripts_path }}/clone-macos-ci-setup.sh \
+          ${{ env.scripts_path }} ${{ env.token }} "add-scripts"
+
+      - name: Get runner group by runner name
+        id: runner-group-label
+        run: |
+          ${{ env.ci_scripts_path }}/get-runner-group.sh \
+          ${{ env.scripts_path }} \
+          $RUNNER_NAME $GITHUB_OUTPUT
+
       - name: Install tools
         run: |
-          ${{ env.ci_script_path }}/install-tools.sh \
+          ${{ env.ci_scripts_path }}/install-tools.sh \
+          ${{ env.scripts_path }} \
           ${{ env.vm_name }} ${{ env.vm_image }} \
-          ${{ env.branch_name }} ${{ env.repo_url }} ${{ env.script_path }}
+          ${{ env.branch_name }} ${{ env.repo_url }}
 
   run-streams:
     needs: install-tools
@@ -47,8 +47,8 @@ jobs:
     steps:
       - name: Run test streams
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "cd ~/_repo && make test-streams-start"
+          ${{ env.ci_scripts_path }}/vm-run-test-streams.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }}
 
   setup-project:
     needs: install-tools
@@ -56,28 +56,8 @@ jobs:
     steps:
       - name: Setup project
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "cd ~/_repo && rm -rf Configuration"
-
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "cd ~/_repo && Scripts/checkout-configuration.sh \
-          https://${{ env.token }}\
-          @github.com/SRGSSR/pillarbox-apple-configuration.git \
-          certificate HEAD Configuration"
-
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "security unlock-keychain -p 'admin' \
-          ~/Library/Keychains/login.keychain-db && \
-          security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 \
-          -k ~/Library/Keychains/login.keychain-db \
-          -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
-
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' \
-          ~/Library/Keychains/login.keychain-db"
-
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
-          "cd ~/_repo && make setup"
+          ${{ env.ci_scripts_path }}/setup-project.sh \
+          ${{ env.scripts_path }} ${{ env.vm_name }} {{ env.token }}
 
   check-quality:
     needs: [install-tools, setup-project]
@@ -85,7 +65,7 @@ jobs:
     steps:
       - name: Run the quality check
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
           ${{ env.vm_name }} "cd ~/_repo && make check-quality"
 
   resolve-spm-dependencies:
@@ -94,7 +74,8 @@ jobs:
     steps:
       - name: Resolve SPM dependencies
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
+          ${{ env.vm_name }} \
           "cd ~/_repo && xcodebuild -resolvePackageDependencies -verbose"
 
   test-ios:
@@ -103,7 +84,8 @@ jobs:
     steps:
       - name: Run the iOS tests
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
+          ${{ env.vm_name }} \
           "cd ~/_repo && make test-ios"
 
   test-tvos:
@@ -112,7 +94,8 @@ jobs:
     steps:
       - name: Run the tvOS tests
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
+          ${{ env.vm_name }} \
           "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
@@ -121,7 +104,8 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
+          ${{ env.vm_name }} \
           "cd ~/_repo && security unlock-keychain -p 'admin' \
           ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
@@ -131,7 +115,8 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_scripts_path }}/run-vm-shell-command.sh \
+          ${{ env.vm_name }} \
           "cd ~/_repo && security unlock-keychain -p 'admin' \
           ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
