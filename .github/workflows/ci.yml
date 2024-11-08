@@ -29,10 +29,8 @@ jobs:
       - name: Runner labels
         id: runner-group-label
         run: |
-          runner_group_label=\
-          $(${{ env.script_path }}/runner-group-label.sh $RUNNER_NAME)
-
-          echo "runner_group_label=$runner_group_label" >> $GITHUB_OUTPUT
+          echo "runner_group_label=$(${{ env.script_path }}\
+          /runner-group-label.sh $RUNNER_NAME)" >> $GITHUB_OUTPUT
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,7 +47,7 @@ jobs:
     steps:
       - name: Run test streams
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && make test-streams-start"
 
   setup-project:
@@ -58,27 +56,27 @@ jobs:
     steps:
       - name: Setup project
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && rm -rf Configuration"
 
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && Scripts/checkout-configuration.sh \
           https://${{ env.token }}\
           @github.com/SRGSSR/pillarbox-apple-configuration.git \
           certificate HEAD Configuration"
 
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "security unlock-keychain -p 'admin' \
           ~/Library/Keychains/login.keychain-db && \
           security import ~/_repo/Configuration/6YXTQTG8JJ_development.p12 \
           -k ~/Library/Keychains/login.keychain-db \
           -P '6YXTQTG8JJ' -T /usr/bin/security -T /usr/bin/codesign"
 
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "security set-key-partition-list -S apple-tool:,apple: -s -k 'admin' \
           ~/Library/Keychains/login.keychain-db"
 
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && make setup"
 
   check-quality:
@@ -87,7 +85,7 @@ jobs:
     steps:
       - name: Run the quality check
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh \
           ${{ env.vm_name }} "cd ~/_repo && make check-quality"
 
   resolve-spm-dependencies:
@@ -96,7 +94,7 @@ jobs:
     steps:
       - name: Resolve SPM dependencies
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && xcodebuild -resolvePackageDependencies -verbose"
 
   test-ios:
@@ -105,7 +103,7 @@ jobs:
     steps:
       - name: Run the iOS tests
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && make test-ios"
 
   test-tvos:
@@ -114,7 +112,7 @@ jobs:
     steps:
       - name: Run the tvOS tests
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && make test-tvos"
 
   archive-demo-ios:
@@ -123,7 +121,7 @@ jobs:
     steps:
       - name: Archive the iOS demo
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && security unlock-keychain -p 'admin' \
           ~/Library/Keychains/login.keychain-db && make archive-demo-ios"
 
@@ -133,7 +131,7 @@ jobs:
     steps:
       - name: Archive the tvOS demo
         run: |
-          ${{ env.script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
+          ${{ env.ci_script_path }}/run-vm-shell-command.sh ${{ env.vm_name }} \
           "cd ~/_repo && security unlock-keychain -p 'admin' \
           ~/Library/Keychains/login.keychain-db && make archive-demo-tvos"
 
