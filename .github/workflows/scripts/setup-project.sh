@@ -13,13 +13,14 @@ fi
 source "$(dirname $(realpath $0))/constants.sh"
 source "$(dirname $(realpath $0))/unlock-keychain.sh"
 
-certificate_path="$REPOSITORY_PATH/Configuration/6YXTQTG8JJ_development.p12"
-certificate_password="6YXTQTG8JJ"
-configuration_repo="github.com/SRGSSR/pillarbox-apple-configuration.git"
 configuration_dir_path="$REPOSITORY_PATH/Configuration"
+configuration_repo="github.com/SRGSSR/pillarbox-apple-configuration.git"
 configuration_script="$REPOSITORY_PATH/Scripts/checkout-configuration.sh"
 configuration_branch="certificate"
 configuration_commit="HEAD"
+
+certificate_path=$(realpath "$configuration_dir_path/*.p12")
+certificate_password="6YXTQTG8JJ"
 
 function import_certificate {
     security import $certificate_path -k $keychain_path -P $certificate_password -T /usr/bin/security -T /usr/bin/codesign
