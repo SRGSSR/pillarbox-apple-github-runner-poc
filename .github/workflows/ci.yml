@@ -89,56 +89,38 @@ jobs:
           ${{ env.ci_scripts_path }}/vm-resolve-spm-dependencies.sh \
           ${{ env.scripts_path }} ${{ env.vm_name }}
 
-  test-ios:
+  tests:
     needs: [install-tools, resolve-spm-dependencies]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
+    strategy:
+      matrix:
+        platform: [ios, tvos]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run the iOS tests
+      - name: Run tests
         run: |
           ${{ env.ci_scripts_path }}/vm-test.sh \
-          ${{ env.scripts_path }} ${{ env.vm_name }} "ios"
+          ${{ env.scripts_path }} ${{ env.vm_name }} ${{ matrix.platform }}
 
-  test-tvos:
-    needs: [install-tools, resolve-spm-dependencies]
+  archive-demos:
+    needs: [install-tools, tests]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
+    strategy:
+      matrix:
+        platform: [ios, tvos]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run the tvOS tests
+      - name: Archive the demo
         run: |
           ${{ env.ci_scripts_path }}/vm-test.sh \
-          ${{ env.scripts_path }} ${{ env.vm_name }} "tvos"
-
-  archive-demo-ios:
-    needs: [install-tools, test-ios, test-tvos]
-    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Archive the iOS demo
-        run: |
-          ${{ env.ci_scripts_path }}/vm-test.sh \
-          ${{ env.scripts_path }} ${{ env.vm_name }} "ios"
-
-  archive-demo-tvos:
-    needs: [install-tools, test-ios, test-tvos]
-    runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Archive the tvOS demo
-        run: |
-          ${{ env.ci_scripts_path }}/vm-test.sh \
-          ${{ env.scripts_path }} ${{ env.vm_name }} "tvos"
+          ${{ env.scripts_path }} ${{ env.vm_name }} ${{ matrix.platform }}
 
   clean:
-    needs: [install-tools, archive-demo-ios, archive-demo-tvos]
+    needs: [install-tools, archive-demos]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     if: always()
     steps:
