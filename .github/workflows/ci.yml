@@ -2,14 +2,14 @@
 name: CI
 on: [pull_request]
 env:
-  token: ${{ secrets.MACOS_CI_SETUP_TOKEN }}
+  token: ${{ secrets.PILLARBOX_CI_CD_TOKEN }}
   vm_name: sequoia-for-pillarbox
   vm_image: ghcr.io/cirruslabs/macos-sequoia-xcode:latest
   branch_name: ${{ github.head_ref }}
   scripts_path: "/tmp/.$vm_name/macos-ci-setup"
   ci_scripts_path: "${{ github.workspace }}/.github/workflows/scripts"
   repo_url:
-    "https://${{ secrets.MACOS_CI_SETUP_TOKEN }}@github.com/\
+    "https://${{ secrets.PILLARBOX_CI_CD_TOKEN }}@github.com/\
     ${{ github.repository }}.git"
 jobs:
   install-tools:
