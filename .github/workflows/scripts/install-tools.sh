@@ -19,7 +19,7 @@ bundler_version="2.5.22"
 
 $scripts_path/brew-fetch.sh $vm_name $tools
 
-$scripts_path/create-vm-for-project.sh $vm_name $vm_image
+$scripts_path/create-vm-for-project.sh $vm_name $vm_image 'reuse'
 $scripts_path/clone-repo-in-vm.sh $vm_name $branch_name $repo_url
 
 $scripts_path/run-vm-shell-command.sh $vm_name "brew install --quiet $tools"

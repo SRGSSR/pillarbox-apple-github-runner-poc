@@ -14,4 +14,4 @@ fi
 source "$(dirname $(realpath $0))/constants.sh"
 source "$(dirname $(realpath $0))/unlock-keychain.sh"
 
-$scripts_path/run-vm-shell-command.sh $vm_name "cd $REPOSITORY_PATH && echo $(unlock_keychain) && make archive-demo-$(echo $platform)"
+$scripts_path/run-vm-shell-command.sh $vm_name "cd $REPOSITORY_PATH && $unlock_keychain && make archive-demo-$(echo $platform)"
