@@ -127,4 +127,3 @@ jobs:
       - name: Stop and remove the VM
         run: |
           tart stop ${{ env.vm_name }}
-          tart delete ${{ env.vm_name }}
