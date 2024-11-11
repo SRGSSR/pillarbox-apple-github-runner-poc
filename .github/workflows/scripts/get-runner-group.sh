@@ -10,6 +10,5 @@ then
     exit 1
 fi
 
-
 runner_group_label=$($scripts_path/runner-group-label.sh $runner_name)
 echo "runner_group_label=$runner_group_label" >> $github_output
