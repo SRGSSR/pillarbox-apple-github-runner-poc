@@ -12,7 +12,6 @@ then
     exit 1
 fi
 
-
 tools="swiftlint shellcheck markdownlint-cli yamllint ffmpeg"
 ruby_version="3.3.5"
 bundler_version="2.5.22"
