@@ -1,5 +1,5 @@
 ---
-name: CI
+name: Continuous Integration
 on: [pull_request]
 env:
   token: ${{ secrets.PILLARBOX_CI_CD_TOKEN }}
@@ -13,6 +13,7 @@ env:
     ${{ github.repository }}.git"
 jobs:
   install-tools:
+    name: "🪚 Tools installation"
     runs-on:
       labels: [tart, macos]
     outputs:
@@ -43,6 +44,7 @@ jobs:
 
   run-streams:
     needs: install-tools
+    name: "🎥 Run server streams"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Checkout code
@@ -55,6 +57,7 @@ jobs:
 
   setup-project:
     needs: install-tools
+    name: "📂 Setup project"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Checkout code
@@ -67,6 +70,7 @@ jobs:
 
   check-quality:
     needs: [install-tools, setup-project]
+    name: "🔎 Check quality"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Checkout code
@@ -79,6 +83,7 @@ jobs:
 
   resolve-spm-dependencies:
     needs: [install-tools, run-streams, setup-project]
+    name: "🔗 Resolving SPM dependencies"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     steps:
       - name: Checkout code
@@ -91,6 +96,7 @@ jobs:
 
   tests:
     needs: [install-tools, resolve-spm-dependencies]
+    name: "🧪 Tests"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     strategy:
       matrix:
@@ -106,6 +112,7 @@ jobs:
 
   archive-demos:
     needs: [install-tools, tests]
+    name: "📦 Archives"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     strategy:
       matrix:
@@ -121,6 +128,7 @@ jobs:
 
   stop:
     needs: [install-tools, archive-demos]
+    name: "🔌 Stop the VM"
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     if: always()
     steps:
