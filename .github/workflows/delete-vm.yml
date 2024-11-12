@@ -1,5 +1,5 @@
 ---
-name: Delete Virtual Machine
+name: Delete virtual machine
 on:
   workflow_dispatch:
     inputs:
