@@ -119,11 +119,11 @@ jobs:
           ${{ env.ci_scripts_path }}/vm-archive.sh \
           ${{ env.scripts_path }} ${{ env.vm_name }} ${{ matrix.platform }}
 
-  clean:
+  stop:
     needs: [install-tools, archive-demos]
     runs-on: ${{ needs.install-tools.outputs.runner_group_label }}
     if: always()
     steps:
-      - name: Stop and remove the VM
+      - name: Stop the VM
         run: |
           tart stop ${{ env.vm_name }}
