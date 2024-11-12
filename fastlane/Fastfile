@@ -111,11 +111,14 @@ end
 def build_and_sign_app(platform_id, configuration_id)
   derived_data_path = "#{Dir.home}/Library/Developer/Xcode/DerivedData/#{platform_id}"
   FileUtils.mkdir_p(derived_data_path)
+  archive_path = "#{Dir.home}/Library/Developer/Xcode/Archives/#{platform_id}"
+  FileUtils.mkdir_p(archive_path)
   build_app(
     project: 'Demo/Pillarbox-demo.xcodeproj',
     configuration: CONFIGURATIONS[configuration_id],
     scheme: 'Pillarbox-demo',
     destination: "generic/platform=#{PLATFORMS[platform_id]}",
+    archive_path:,
     derived_data_path:,
     export_team_id: ENV.fetch('TEAM_ID'),
     output_directory: 'Binaries',
