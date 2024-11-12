@@ -1,15 +1,16 @@
 ---
-name: Delete Virtual Machine
-on: [workflow_dispatch]
-inputs:
-  virtual-machine:
-    description: 'Virtual machine name'
-    required: true
-    default: ''
-  runner-group-label:
-    description: 'Runner group label'
-    required: true
-    default: ''
+name: Delete virtual machine
+on:
+  workflow_dispatch:
+    inputs:
+      virtual-machine:
+        description: 'Virtual machine name'
+        required: true
+        default: ''
+      runner-group-label:
+        description: 'Runner group label'
+        required: true
+        default: ''
 jobs:
   delete-vm:
     runs-on: ${{ github.event.inputs.runner-group-label }}
