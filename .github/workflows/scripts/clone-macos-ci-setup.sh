@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 scripts_path_destination=$1
 github_token=$2

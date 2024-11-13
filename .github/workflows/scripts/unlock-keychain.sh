@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 keychain_password="admin"
 keychain_path="~/Library/Keychains/login.keychain-db"

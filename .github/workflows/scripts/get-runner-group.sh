@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 scripts_path="$1"
 runner_name="$2"
