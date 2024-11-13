@@ -45,7 +45,7 @@ struct DemoApp: App {
             ShowcaseView()
         }
         .tabItem {
-            Label("Showcase", systemImage: "text.book.closed")
+            Label("Showcases", systemImage: "text.book.closed")
         }
     }
 
