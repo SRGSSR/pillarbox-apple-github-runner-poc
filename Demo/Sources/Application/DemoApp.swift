@@ -35,7 +35,7 @@ struct DemoApp: App {
             ExamplesView()
         }
         .tabItem {
-            Label("Examples", systemImage: "film")
+            Label("Example", systemImage: "film")
         }
     }
 
