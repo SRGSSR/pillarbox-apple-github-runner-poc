@@ -10,3 +10,5 @@ jobs:
       - uses: pkgxdev/setup@v1
         with:
           +: ffmpeg
+      - name: "Check ffmpeg version"
+        run: ffmpeg -version
