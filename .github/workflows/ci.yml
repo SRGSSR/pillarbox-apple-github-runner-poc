@@ -2,13 +2,13 @@
 name: Continuous Integration
 on: [push]
 jobs:
-  install-tools:
-    name: "🪚 Tools installation"
+  Check-quality:
+    name: "🔎 Check quality"
     runs-on:
       labels: [tart, wk]
     steps:
       - uses: pkgxdev/setup@v1
         with:
-          +: ffmpeg
-      - name: "Check ffmpeg version"
-        run: ffmpeg -version
+          +: swiftlint shellcheck markdownlint yamllint
+      - name: "Check quality"
+        run: swiftlint --version
