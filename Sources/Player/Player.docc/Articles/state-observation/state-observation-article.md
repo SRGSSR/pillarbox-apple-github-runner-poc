@@ -9,7 +9,7 @@ Learn how to observe state associated with a player.
 
 ## Overview
 
-The PillarboxPlayer framework heavily relies on [Combine](https://developer.apple.com/documentation/combine),  [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) and published properties. This makes it possible for SwiftUI views to automatically observe and respond to change.
+The ``PillarboxPlayer`` framework heavily relies on [Combine](https://developer.apple.com/documentation/combine),  [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) and published properties. This makes it possible for SwiftUI views to automatically observe and respond to change.
 
 Unsupervised property publishing can lead to an explosion of updates sent from an observable object, though, leading to potentially unnecessary SwiftUI view body refreshes, poor layout performance and energy consumption issues.
 
@@ -47,7 +47,7 @@ For this reason ``Player`` does not publish time updates automatically. Explicit
 - Use ``Player/periodicTimePublisher(forInterval:queue:)`` for periodic time updates.
 - Use ``Player/boundaryTimePublisher(for:queue:)`` to detect time traversal.
 
-When implementing a user interface, you should rather use ``ProgressTracker`` to observe progress changes without the need for explicit time update subscription.
+When implementing a user interface you should rather use ``ProgressTracker`` to observe progress changes without the need for explicit time update subscription.
 
 ### Explicitly subscribe to frequent updates
 
@@ -75,6 +75,28 @@ struct PlaybackView: View {
 ```
 
 Check ``PlayerProperties`` for the list of all properties that are available for explicit observation.
+
+### Respond to state updates
+
+You can respond to state updates at the view level using the ``SwiftUICore/View/onReceive(player:at:perform:)`` modifier. This can be useful to trigger actions when some specific state is reached, for example when ending playback of an item:
+
+```swift
+struct PlaybackView: View {
+    @StateObject private var player = Player(
+        item: .simple(url: URL(string: "https://www.server.com/master.m3u8")!)
+    )
+
+    var body: some View {
+        ZStack {
+            VideoView(player: player)
+        }
+        .onReceive(player: player, at: \.playbackState) { playbackState in
+            guard playbackState == .ended else { return }
+            // ...
+        }
+    }
+}
+```
 
 ### Use SwiftUI property wrappers wisely
 
