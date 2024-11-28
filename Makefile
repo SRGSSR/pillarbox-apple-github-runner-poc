@@ -144,7 +144,7 @@ help:
 	@echo "The following targets are available:"
 	@echo ""
 	@echo "   all                                Default target"
-	@echo "   install-pkgx                      Install required tools"
+	@echo "   install-pkgx                       Install required tools"
 	@echo ""
 	@echo "   fastlane                           Run fastlane"
 	@echo ""
