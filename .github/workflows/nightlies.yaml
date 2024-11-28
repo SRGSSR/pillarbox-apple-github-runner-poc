@@ -1,9 +1,9 @@
 ---
 name: Nightlies
 
-on:  # yamllint disable-line rule:truthy
-  push:
-    branches: [main]
+# on:  # yamllint disable-line rule:truthy
+#   push:
+#     branches: [main]
 
 jobs:
   deliver-demo-nightlies:
