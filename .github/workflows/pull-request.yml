@@ -4,38 +4,38 @@ name: Pull Request
 on: push  # yamllint disable-line rule:truthy
 
 jobs:
-  # check-quality:
-  #   name: "🔎 Check quality"
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Run the quality check
-  #       run: make check-quality
-
-  # build-documentation:
-  #   name: "📚 Build documentation"
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Build the documentation
-  #       run: make doc
-
-  tests:
-    name: "🧪 Tests"
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        platform: [ios, tvos]
+  check-quality:
+    name: "🔎 Check quality"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run tests
-        run: make test-${{ matrix.platform }}
+      - name: Run the quality check
+        run: make check-quality
+
+  build-documentation:
+    name: "📚 Build documentation"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build the documentation
+        run: make doc
+
+  # tests:
+  #   name: "🧪 Tests"
+  #   runs-on: macos-latest
+  #   strategy:
+  #     matrix:
+  #       platform: [ios, tvos]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Run tests
+  #       run: make test-${{ matrix.platform }}
 
   # archive-demos:
   #   name: "📦 Archives"
