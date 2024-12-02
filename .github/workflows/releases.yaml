@@ -1,13 +1,16 @@
 ---
-name: Nightlies
+name: Releases
 
 on:  # yamllint disable-line rule:truthy
   push:
-    branches: [main]
+#    branches:
+#      - main
+    tags:
+      - '*'
 
 jobs:
-  deliver-demo-nightlies:
-    name: "🌙 Nightlies"
+  deliver-demo-releases:
+    name: "🚀 Releases"
     runs-on: macos-latest
     strategy:
       matrix:
@@ -30,7 +33,7 @@ jobs:
 
       - name: Archive the demo
         run: |
-          make deliver-demo-nightly-${{ matrix.platform }}
+          make deliver-demo-release-${{ matrix.platform }}
         env:
           TEAM_ID: ${{ secrets.TEAM_ID }}
           KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
