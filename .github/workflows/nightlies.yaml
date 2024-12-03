@@ -3,7 +3,7 @@ name: Nightlies
 
 on:  # yamllint disable-line rule:truthy
   push:
-    branches: [main]
+    branches: main
 
 jobs:
   deliver-demo-nightlies:

@@ -90,7 +90,8 @@ enum URLMedia {
         timeRanges: [
             .init(kind: .blocked, start: .zero, end: .init(value: 300, timescale: 1)),
             .init(kind: .blocked, start: .init(value: 600, timescale: 1), end: .init(value: 900, timescale: 1)),
-            .init(kind: .blocked, start: .init(value: 700, timescale: 1), end: .init(value: 1200, timescale: 1))
+            .init(kind: .blocked, start: .init(value: 700, timescale: 1), end: .init(value: 1200, timescale: 1)),
+            .init(kind: .blocked, start: .init(value: 1500, timescale: 1), end: .init(value: 1800, timescale: 1))
         ]
     )
     static let appleBasic_4_3_HLS = Media(

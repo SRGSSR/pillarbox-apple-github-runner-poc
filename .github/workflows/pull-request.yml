@@ -4,25 +4,25 @@ name: Pull Request
 on: push  # yamllint disable-line rule:truthy
 
 jobs:
-  # check-quality:
-  #   name: "🔎 Check quality"
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  check-quality:
+    name: "🔎 Check quality"
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Run the quality check
-  #       run: make check-quality
+      - name: Run the quality check
+        run: make check-quality
 
-  # build-documentation:
-  #   name: "📚 Build documentation"
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  build-documentation:
+    name: "📚 Build documentation"
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Build the documentation
-  #       run: make doc
+      - name: Build the documentation
+        run: make doc
 
   tests:
     name: "🧪 Tests"
@@ -37,33 +37,33 @@ jobs:
       - name: Run tests
         run: make test-${{ matrix.platform }}
 
-  # archive-demos:
-  #   name: "📦 Archives"
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       platform: [ios, tvos]
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  archive-demos:
+    name: "📦 Archives"
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        platform: [ios, tvos]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Add Apple certificate
-  #       run: |
-  #         Scripts/add-apple-certificate.sh \
-  #         $RUNNER_TEMP \
-  #         ${{ secrets.KEYCHAIN_PASSWORD }} \
-  #         ${{ secrets.APPLE_DEV_CERTIFICATE }} \
-  #         ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
+      - name: Add Apple certificate
+        run: |
+          Scripts/add-apple-certificate.sh \
+          $RUNNER_TEMP \
+          ${{ secrets.KEYCHAIN_PASSWORD }} \
+          ${{ secrets.APPLE_DEV_CERTIFICATE }} \
+          ${{ secrets.APPLE_DEV_CERTIFICATE_PASSWORD }}
 
-  #     - name: Configure environment
-  #       run: |
-  #         Scripts/configure-environment.sh \
-  #         ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      - name: Configure environment
+        run: |
+          Scripts/configure-environment.sh \
+          ${{ secrets.APP_STORE_CONNECT_API_KEY }}
 
-  #     - name: Archive the demo
-  #       run: make archive-demo-${{ matrix.platform }}
-  #       env:
-  #         TEAM_ID: ${{ secrets.TEAM_ID }}
-  #         KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-  #         KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ISSUER_ID }}
-  #         TESTFLIGHT_GROUPS: ${{ vars.TESTFLIGHT_GROUPS }}
+      - name: Archive the demo
+        run: make archive-demo-${{ matrix.platform }}
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ISSUER_ID }}
+          TESTFLIGHT_GROUPS: ${{ vars.TESTFLIGHT_GROUPS }}

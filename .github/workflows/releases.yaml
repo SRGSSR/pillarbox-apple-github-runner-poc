@@ -3,8 +3,8 @@ name: Releases
 
 on:  # yamllint disable-line rule:truthy
   push:
-    tags:
-      - '*'
+    branches: main
+    tags: '*'
 
 jobs:
   deliver-demo-releases:
