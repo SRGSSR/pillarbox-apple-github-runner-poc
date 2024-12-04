@@ -1,0 +1,17 @@
+---
+name: 🔎 Quality
+
+on:  # yamllint disable-line rule:truthy
+  merge_group:
+  pull_request:
+
+jobs:
+  check-quality:
+    name: Check quality
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run the quality check
+        run: make check-quality

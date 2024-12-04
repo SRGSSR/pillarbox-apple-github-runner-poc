@@ -1,5 +1,5 @@
 ---
-name: Releases
+name: 🚀 Releases
 
 on:  # yamllint disable-line rule:truthy
   push:
@@ -7,7 +7,7 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   deliver-demo-releases:
-    name: 🚀 Releases
+    name: Releases
     runs-on: macos-latest
     strategy:
       matrix:
