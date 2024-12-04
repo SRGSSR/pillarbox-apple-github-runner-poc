@@ -1,0 +1,20 @@
+---
+name: 🧪 Tests
+
+on:  # yamllint disable-line rule:truthy
+  merge_group:
+  pull_request:
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        platform: [ios, tvos]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: make test-${{ matrix.platform }}
