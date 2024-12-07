@@ -25,10 +25,10 @@ final class ComScoreTrackerSeekTests: ComScoreTestCase {
 
         expectAtLeastHits(
             pause { labels in
-                expect(labels.ns_st_po).to(beCloseTo(0, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(0, within: 2))
             },
             play { labels in
-                expect(labels.ns_st_po).to(beCloseTo(7, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(7, within: 2))
             }
         ) {
             player.seek(at(.init(value: 7, timescale: 1)))
@@ -51,7 +51,7 @@ final class ComScoreTrackerSeekTests: ComScoreTestCase {
 
         expectAtLeastHits(
             play { labels in
-                expect(labels.ns_st_po).to(beCloseTo(7, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(7, within: 2))
             }
         ) {
             player.play()

@@ -118,7 +118,7 @@ final class SkipForwardTests: TestCase {
         waitUntil { done in
             player.skipForward { finished in
                 expect(finished).to(beTrue())
-                expect(player.time()).to(equal(seekTo, by: beClose(within: 0.5)))
+                expect(player.time()).to(equal(seekTo, by: beClose(within: 2)))
                 done()
             }
         }

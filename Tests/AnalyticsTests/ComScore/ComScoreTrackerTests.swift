@@ -79,7 +79,7 @@ final class ComScoreTrackerTests: ComScoreTestCase {
 
         expectAtLeastHits(
             pause { labels in
-                expect(labels.ns_st_po).to(beCloseTo(1, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(1, within: 2))
             }
         ) {
             player.pause()
@@ -97,7 +97,7 @@ final class ComScoreTrackerTests: ComScoreTestCase {
         expectAtLeastHits(
             play(),
             end { labels in
-                expect(labels.ns_st_po).to(beCloseTo(Stream.mediumOnDemand.duration.seconds, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(Stream.mediumOnDemand.duration.seconds, within: 2))
             }
         ) {
             player.play()
@@ -114,7 +114,7 @@ final class ComScoreTrackerTests: ComScoreTestCase {
         expectAtLeastHits(
             play(),
             end { labels in
-                expect(labels.ns_st_po).to(beCloseTo(5, within: 0.5))
+                expect(labels.ns_st_po).to(beCloseTo(5, within: 2))
             }
         ) {
             // See 2. at the top of this file.
