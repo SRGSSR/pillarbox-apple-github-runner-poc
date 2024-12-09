@@ -38,17 +38,19 @@ final class PlayerItemTrackerMetricPublisherTests: TestCase {
 
     func testPlaylist() {
         let player = Player(items: [.simple(url: Stream.shortOnDemand.url), .simple(url: Stream.mediumOnDemand.url)])
-        expectSimilarPublished(
+        let publisher = player.metricEventsPublisher
+        expectAtLeastSimilarPublished(
             values: [
                 [],
                 [.anyMetadata],
                 [.anyMetadata, .anyAsset],
                 [.anyMetadata, .anyAsset]
             ],
-            from: player.metricEventsPublisher,
-            during: .seconds(2)
+            from: publisher
         ) {
             player.play()
         }
+
+        expectNothingPublishedNext(from: publisher, during: .seconds(1))
     }
 }

@@ -83,12 +83,14 @@ final class MetadataPublisherTests: TestCase {
 
     func testEntirePlayback() {
         let player = Player(item: .mock(url: Stream.shortOnDemand.url, loadedAfter: 0, withMetadata: AssetMetadataMock(title: "title")))
-        expectEqualPublished(
+        let publisher = Self.titlePublisherTest(for: player)
+        expectAtLeastEqualPublished(
             values: [nil, "title", nil],
-            from: Self.titlePublisherTest(for: player),
-            during: .seconds(2)
+            from: publisher
         ) {
             player.play()
         }
+
+        expectNothingPublishedNext(from: publisher, during: .seconds(1))
     }
 }

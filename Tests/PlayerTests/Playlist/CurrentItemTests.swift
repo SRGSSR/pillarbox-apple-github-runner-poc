@@ -42,13 +42,15 @@ final class CurrentItemTests: TestCase {
         let item2 = PlayerItem.simple(url: Stream.unavailable.url)
         let item3 = PlayerItem.simple(url: Stream.shortOnDemand.url)
         let player = Player(items: [item1, item2, item3])
-        expectEqualPublished(
+        let publisher = player.changePublisher(at: \.currentItem).removeDuplicates()
+        expectAtLeastEqualPublished(
             values: [item1, item2],
-            from: player.changePublisher(at: \.currentItem).removeDuplicates(),
-            during: .seconds(2)
+            from: publisher
         ) {
             player.play()
         }
+
+        expectNothingPublishedNext(from: publisher, during: .seconds(1))
     }
 
     func testCurrentItemWithLastFailedItem() {
