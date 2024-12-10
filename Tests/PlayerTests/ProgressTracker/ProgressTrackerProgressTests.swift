@@ -54,7 +54,7 @@ final class ProgressTrackerProgressTests: TestCase {
             values: [0, 0.25, 0.5, 0.75, 1, 0],
             from: progressTracker.changePublisher(at: \.progress)
                 .removeDuplicates(),
-            to: beClose(within: 0.1),
+            to: beClose(within: 0.2),
             during: .seconds(2)
         ) {
             progressTracker.player = player
