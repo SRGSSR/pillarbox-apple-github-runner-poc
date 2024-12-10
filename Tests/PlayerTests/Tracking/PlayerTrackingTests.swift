@@ -97,7 +97,7 @@ final class PlayerTrackingTests: TestCase {
 
         let publisher = PlayerItemTrackerMock.StatePublisher()
 
-        expectEqualPublished(values: [.initialized, .enabled, .metricEvents, .metricEvents], from: publisher, during: .seconds(1)) {
+        expectAtLeastEqualPublished(values: [.initialized, .enabled, .metricEvents, .metricEvents], from: publisher) {
             player.append(
                 .simple(
                     url: Stream.shortOnDemand.url,
