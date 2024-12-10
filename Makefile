@@ -69,7 +69,7 @@ test-ios: install-pkgx install-bundler
 	@echo "Running unit tests..."
 	@Scripts/test-streams.sh -s
 	@pkgx bundle exec fastlane test_ios
-	@Scripts/test-streams.sh -k
+#	@Scripts/test-streams.sh -k
 	@echo "... done.\n"
 
 .PHONY: test-tvos
@@ -77,7 +77,7 @@ test-tvos: install-pkgx install-bundler
 	@echo "Running unit tests..."
 	@Scripts/test-streams.sh -s
 	@pkgx bundle exec fastlane test_tvos
-	@Scripts/test-streams.sh -k
+#	@Scripts/test-streams.sh -k
 	@echo "... done.\n"
 
 .PHONY: check-quality

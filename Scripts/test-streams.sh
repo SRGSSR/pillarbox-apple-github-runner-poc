@@ -115,7 +115,7 @@ function generate_packaged_streams {
 }
 
 function serve_directory {
-    python -m http.server 8123 --directory "$1" > /dev/null 2>&1 &
+    python -m http.server 8123 --directory "$1" &
 }
 
 function kill_test_streams {
