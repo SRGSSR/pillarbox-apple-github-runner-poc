@@ -4,7 +4,7 @@ SCRIPT_NAME=$(basename "$0")
 SCRIPT_DIR=$(dirname "$0")
 
 eval "$(pkgx --shellcode)"
-env +python +ffmpeg +packager
+env +npx  +ffmpeg +packager
 
 GENERATED_DIR="/tmp/pillarbox"
 
@@ -17,8 +17,8 @@ function serve_test_streams {
 
     kill_test_streams "$dest_dir"
 
-    if ! command -v python &> /dev/null; then
-        echo "python could not be found"
+    if ! command -v npx  &> /dev/null; then
+        echo "npx  could not be found"
         exit 1
     fi
 
@@ -115,7 +115,7 @@ function generate_packaged_streams {
 }
 
 function serve_directory {
-    python -m http.server 8123 --directory "$1" &
+    npx http-server "$1" -p 8123 &
 }
 
 function kill_test_streams {
