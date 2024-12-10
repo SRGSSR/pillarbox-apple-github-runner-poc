@@ -50,21 +50,16 @@ final class ProgressTrackerProgressTests: TestCase {
         let progressTracker = ProgressTracker(interval: CMTime(value: 1, timescale: 4))
         let item = PlayerItem.simple(url: Stream.shortOnDemand.url)
         let player = Player(item: item)
-        let delta: Float = 0.1
-        let publisher = progressTracker.changePublisher(at: \.progress)
-            .removeDuplicates { previous, current in
-                abs(previous - current) < delta
-            }
-        expectAtLeastPublished(
+        expectPublished(
             values: [0, 0.25, 0.5, 0.75, 1, 0],
-            from: publisher,
-            to: beClose(within: delta)
+            from: progressTracker.changePublisher(at: \.progress)
+                .removeDuplicates(),
+            to: beClose(within: 0.1),
+            during: .seconds(2)
         ) {
             progressTracker.player = player
             player.play()
         }
-
-        expectNothingPublishedNext(from: publisher, during: .seconds(1))
     }
 
     func testPausedDvrStream() {
