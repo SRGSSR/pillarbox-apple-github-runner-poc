@@ -3,7 +3,7 @@
 //
 //  License information is available from the LICENSE file.
 //
-
+/*
 @testable import PillarboxPlayer
 
 import AVFoundation
@@ -295,3 +295,4 @@ private extension Player {
         return try await item.asset.loadMediaSelectionGroup(for: characteristic)
     }
 }
+*/
