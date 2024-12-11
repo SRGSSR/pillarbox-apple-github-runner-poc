@@ -115,7 +115,7 @@ function generate_packaged_streams {
 }
 
 function serve_directory {
-    npx http-server "$1" -p 8123 &
+    npx http-server "$1" -c-1 -p 8123 &
 }
 
 function kill_test_streams {
