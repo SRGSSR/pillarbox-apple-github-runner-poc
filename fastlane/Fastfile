@@ -199,6 +199,8 @@ def run_package_tests(platform_id, scheme_name)
     clean: true,
     output_types: 'junit',
     fail_build: false,
+    parallel_testing: false,
+    max_concurrent_simulators: 1,
     disable_concurrent_testing: true,
     xcargs: '-testLanguage en -testRegion en_US'
   )
