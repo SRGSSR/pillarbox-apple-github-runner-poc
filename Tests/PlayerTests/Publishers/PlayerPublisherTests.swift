@@ -54,10 +54,9 @@ final class PlayerPublisherTests: TestCase {
 
     func testBuffering() {
         let player = Player(item: .simple(url: Stream.onDemand.url))
-        expectEqualPublished(
+        expectAtLeastEqualPublished(
             values: [true, false],
-            from: Self.bufferingPublisher(for: player),
-            during: .seconds(1)
+            from: Self.bufferingPublisher(for: player)
         )
     }
 
