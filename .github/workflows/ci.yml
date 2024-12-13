@@ -4,6 +4,7 @@ name: CI
 on:  # yamllint disable-line rule:truthy
   merge_group:
   pull_request:
+  push:
 
 jobs:
   check-quality:
